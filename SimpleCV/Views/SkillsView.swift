@@ -26,7 +26,7 @@ struct SkillsView: View {
                 addSkill()
             }, label: {
                 Image(systemName: "plus.circle.fill")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(.green)
                     .imageScale(.large)
             })
             .disabled(newSkill.isEmpty)

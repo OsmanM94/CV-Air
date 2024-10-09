@@ -140,7 +140,7 @@ struct ProfessionalExperienceView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .imageScale(.large)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.green)
                 }
                 .disabled(newResponsibility.isEmpty)
             }

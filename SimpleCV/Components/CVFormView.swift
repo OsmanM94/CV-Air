@@ -7,23 +7,6 @@
 
 import SwiftUI
 
-enum TextEditing: Hashable {
-    case isEditingSummary
-    case isEditingProjectDetails
-
-    var id: Int {
-        switch self {
-        case .isEditingSummary:
-            return 1
-        case .isEditingProjectDetails:
-            return 2
-        }
-    }
-}
-
-enum TextFocus: Hashable {
-    case isEditing
-}
 
 struct CVFormView: View {
     @Bindable var cv: CV
