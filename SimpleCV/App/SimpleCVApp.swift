@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct SimpleCVApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Tab()
         }
+        .modelContainer(for: CV.self)
     }
 }
