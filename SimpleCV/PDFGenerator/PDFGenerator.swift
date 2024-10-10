@@ -43,8 +43,8 @@ struct CVPDFGenerator {
                         currentYOffset = addEducationalHistory(cv.educationalHistory, pageRect: pageRect, yOffset: currentYOffset, context: context)
                     }
                     
-                    if let projects = cv.projects, !projects.isEmpty {
-                        currentYOffset = addProjects(projects, pageRect: pageRect, yOffset: currentYOffset, context: context)
+                    if !cv.projects.isEmpty {
+                        currentYOffset = addProjects(cv.projects, pageRect: pageRect, yOffset: currentYOffset, context: context)
                     }
                     
                     if !cv.skills.isEmpty {
@@ -356,25 +356,22 @@ struct CVPDFGenerator {
                 yPosition = 36
             }
             
-            if let title = project.title {
-                let attributedProjectTitle = NSAttributedString(string: title, attributes: projectTitleAttributes)
-                let titleSize = attributedProjectTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-                let titleRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: titleSize.height)
-                attributedProjectTitle.draw(in: titleRect)
-                yPosition += titleSize.height + 5
-            }
+            let attributedProjectTitle = NSAttributedString(string: project.title, attributes: projectTitleAttributes)
+            let titleSize = attributedProjectTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+            let titleRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: titleSize.height)
+            attributedProjectTitle.draw(in: titleRect)
+            yPosition += titleSize.height + 5
             
-            if let details = project.details {
-                if yPosition > pageRect.height - 72 {
-                    context.beginPage()
-                    yPosition = 36
-                }
-                let attributedDetails = NSAttributedString(string: details, attributes: detailsAttributes)
-                let detailsSize = attributedDetails.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-                let detailsRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: detailsSize.height)
-                attributedDetails.draw(in: detailsRect)
-                yPosition += detailsSize.height + 10
+           
+            if yPosition > pageRect.height - 72 {
+                context.beginPage()
+                yPosition = 36
             }
+            let attributedDetails = NSAttributedString(string:  project.details, attributes: detailsAttributes)
+            let detailsSize = attributedDetails.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+            let detailsRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: detailsSize.height)
+            attributedDetails.draw(in: detailsRect)
+            yPosition += detailsSize.height + 10
         }
         
         return yPosition

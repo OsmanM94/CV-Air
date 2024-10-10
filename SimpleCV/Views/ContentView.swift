@@ -8,19 +8,6 @@
 import SwiftUI
 import SwiftData
 
-
-func formatYearRange(start: Int, end: Int?) -> String {
-    if let end = end {
-        return "\(start) - \(end)"
-    } else {
-        return "\(start) - Present"
-    }
-}
-
-func hideKeyboard() {
-    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-}
-
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var cv = CV(

@@ -181,4 +181,3 @@ struct ProfessionalExperienceView: View {
     }
 }
 
-

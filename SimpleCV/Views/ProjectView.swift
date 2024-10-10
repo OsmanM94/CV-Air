@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct ProjectView: View {
-    @Binding var projects: [Project]?
-    @State private var newProject = Project(title: nil, details: nil)
+    @Binding var projects: [Project]
+    @State private var newProject = Project(title: "", details: "")
     @State private var editingProjectId: UUID? = nil
     @State private var tempTitle: String = ""
     @State private var tempDetails: String = ""
     
     var body: some View {
         List {
-            ForEach(projects ?? [], id: \.id) { project in
+            ForEach(projects, id: \.id) { project in
                 VStack(alignment: .leading, spacing: 20) {
                     if editingProjectId == project.id {
                         TextField("Project Title", text: $tempTitle)
@@ -42,7 +42,7 @@ struct ProjectView: View {
                         }
                     } else {
                         HStack {
-                            Text(project.title ?? "")
+                            Text(project.title)
                                 .font(.headline)
                                 .fontWeight(.bold)
                             
@@ -57,7 +57,7 @@ struct ProjectView: View {
                             .foregroundStyle(.blue)
                         }
                         
-                        Text(project.details ?? "")
+                        Text(project.details)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -72,8 +72,8 @@ struct ProjectView: View {
         }
         
         TextField("Project Title", text: Binding(
-            get: { newProject.title ?? "" },
-            set: { newProject.title = $0.isEmpty ? nil : $0 }
+            get: { newProject.title },
+            set: { newProject.title =  $0 }
         ))
         .padding([.top])
         .autocorrectionDisabled()
@@ -81,8 +81,8 @@ struct ProjectView: View {
         .alignmentGuide(.leading, computeValue: {_ in 0 })
         
         TextEditor(text: Binding(
-            get: { newProject.details ?? "" },
-            set: { newProject.details = $0.isEmpty ? nil : $0 }
+            get: { newProject.details },
+            set: { newProject.details = $0 }
         ))
         .frame(minHeight: 200)
         .autocorrectionDisabled()
@@ -98,20 +98,20 @@ struct ProjectView: View {
             .frame(maxWidth: .infinity)
             .padding()
         }
-        .disabled((newProject.title ?? "").isEmpty && (newProject.details ?? "").isEmpty)
+        .disabled((newProject.title).isEmpty && (newProject.details).isEmpty)
         .listRowSeparator(.hidden)
     }
     
     private func startEditing(_ project: Project) {
         editingProjectId = project.id
-        tempTitle = project.title ?? ""
-        tempDetails = project.details ?? ""
+        tempTitle = project.title
+        tempDetails = project.details
     }
     
     private func saveEdits(for project: Project) {
-        if let index = projects?.firstIndex(where: { $0.id == project.id }) {
-            projects?[index].title = tempTitle.isEmpty ? nil : tempTitle
-            projects?[index].details = tempDetails.isEmpty ? nil : tempDetails
+        if let index = projects.firstIndex(where: { $0.id == project.id }) {
+            projects[index].title = tempTitle
+            projects[index].details = tempDetails
         }
         editingProjectId = nil
     }
@@ -121,19 +121,17 @@ struct ProjectView: View {
     }
     
     private func moveProject(from source: IndexSet, to destination: Int) {
-        projects?.move(fromOffsets: source, toOffset: destination)
+        projects.move(fromOffsets: source, toOffset: destination)
     }
     
     private func addNewProject() {
-        if projects == nil {
-            projects = []
-        }
-        projects?.append(newProject)
-        newProject = Project(title: nil, details: nil)
+        projects = []
+        projects.append(newProject)
+        newProject = Project(title: "", details: "")
     }
     
     private func deleteProject(at offsets: IndexSet) {
-        projects?.remove(atOffsets: offsets)
+        projects.remove(atOffsets: offsets)
     }
 }
 

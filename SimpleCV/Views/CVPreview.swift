@@ -24,7 +24,6 @@ struct CVPreview: View {
                         if let website = cv.personalInfo.website, !website.isEmpty {
                             Text("Website: \(website)")
                                 .font(.system(size: 12))
-                                
                         }
                     }
                     
@@ -79,20 +78,16 @@ struct CVPreview: View {
                     }
                     
                     // Projects
-                    if let projects = cv.projects, !projects.isEmpty {
+                    if !cv.projects.isEmpty {
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Projects")
                                 .font(.system(size: 16, weight: .bold))
-                            ForEach(projects) { project in
+                            ForEach(cv.projects) { project in
                                 VStack(alignment: .leading, spacing: 5) {
-                                    if let title = project.title {
-                                        Text(title)
-                                            .font(.system(size: 14, weight: .semibold))
-                                    }
-                                    if let details = project.details {
-                                        Text(details)
-                                            .font(.system(size: 12))
-                                    }
+                                    Text(project.title)
+                                        .font(.system(size: 14, weight: .semibold))
+                                    Text(project.details)
+                                        .font(.system(size: 12))
                                 }
                                 .padding(.bottom, 5)
                             }

@@ -25,7 +25,7 @@ struct CVFormView: View {
             }
             
             Section(header: Text("Summary")) {
-                TextField("Short summary of your career", text: $cv.summary, axis: .vertical)
+                TextField("A short summary of yourself", text: $cv.summary, axis: .vertical)
                     .autocorrectionDisabled()
             }
             
