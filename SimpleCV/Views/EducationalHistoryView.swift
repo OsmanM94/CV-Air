@@ -101,13 +101,5 @@ struct EducationalHistoryView: View {
     func deleteEducation(at offsets: IndexSet) {
         educationalHistory.remove(atOffsets: offsets)
     }
-    
-    func formatYearRange(start: Int, end: Int?) -> String {
-        if let end = end {
-            return "\(start) - \(end)"
-        } else {
-            return "\(start) - Present"
-        }
-    }
 }
 

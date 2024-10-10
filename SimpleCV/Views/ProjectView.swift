@@ -25,7 +25,7 @@ struct ProjectView: View {
                         TextField("Project Details", text: $tempDetails, axis: .vertical)
                             .autocorrectionDisabled()
                      
-                        HStack(spacing: 15) {
+                        HStack(spacing: 20) {
                             Button {
                                 saveEdits(for: project)
                             } label: {
