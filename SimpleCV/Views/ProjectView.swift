@@ -21,16 +21,19 @@ struct ProjectView: View {
                     if editingProjectId == project.id {
                         TextField("Project Title", text: $tempTitle)
                             .autocorrectionDisabled()
+                            .accessibilityLabel("Edit Project Title")
                         
                         TextField("Project Details", text: $tempDetails, axis: .vertical)
-                     
+                            .accessibilityLabel("Edit Project Details")
+                        
                         HStack(spacing: 20) {
                             Button {
                                 saveEdits(for: project)
                             } label: {
-                               Text("Save")
+                                Text("Save")
                             }
                             .foregroundStyle(.blue)
+                            .accessibilityLabel("Save Project Edits")
                             
                             Button(action: {
                                 cancelEditing()
@@ -38,6 +41,7 @@ struct ProjectView: View {
                                 Text("Cancel")
                             })
                             .foregroundStyle(.red)
+                            .accessibilityLabel("Cancel Project Edits")
                         }
                     } else {
                         HStack {
@@ -54,6 +58,7 @@ struct ProjectView: View {
                                     .imageScale(.large)
                             }
                             .foregroundStyle(.blue)
+                            .accessibilityLabel("Edit Project")
                         }
                         
                         Text(project.details)
@@ -64,6 +69,9 @@ struct ProjectView: View {
                 .padding()
                 .background(Color.black.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel(editingProjectId == project.id ? "Editing Project" : "Project")
+                .accessibilityValue(editingProjectId == project.id ? "Title: \(tempTitle), Details: \(tempDetails)" : "Title: \(project.title), Details: \(project.details)")
             }
             .onMove(perform: moveProject)
             .onDelete(perform: deleteProject)
@@ -78,6 +86,7 @@ struct ProjectView: View {
         .autocorrectionDisabled()
         .listRowSeparator(.hidden, edges: .bottom)
         .alignmentGuide(.leading, computeValue: {_ in 0 })
+        .accessibilityLabel("New Project Title")
         
         TextEditor(text: Binding(
             get: { newProject.details },
@@ -86,6 +95,7 @@ struct ProjectView: View {
         .frame(minHeight: 200)
         .background(Color(.black).opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .accessibilityLabel("New Project Details")
         
         Button(action: addNewProject) {
             HStack {
@@ -98,6 +108,8 @@ struct ProjectView: View {
         }
         .disabled((newProject.title).isEmpty && (newProject.details).isEmpty)
         .listRowSeparator(.hidden)
+        .accessibilityLabel("Add New Project")
+        .accessibilityHint("Adds a new project with the entered title and details")
     }
     
     private func startEditing(_ project: Project) {
@@ -123,7 +135,7 @@ struct ProjectView: View {
     }
     
     private func addNewProject() {
-        projects = []
+//        projects = []
         projects.append(newProject)
         newProject = Project(title: "", details: "")
     }

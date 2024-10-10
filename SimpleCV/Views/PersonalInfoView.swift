@@ -24,6 +24,7 @@ struct PersonalInfoView: View {
                 .autocorrectionDisabled()
                 .focused($focusedField, equals: .name)
                 .submitLabel(.next)
+                .accessibilityLabel("Name")
             
             Divider()
             
@@ -32,6 +33,7 @@ struct PersonalInfoView: View {
                 .autocorrectionDisabled()
                 .focused($focusedField, equals: .address)
                 .submitLabel(.next)
+                .accessibilityLabel("Address")
             
             Divider()
             
@@ -40,6 +42,7 @@ struct PersonalInfoView: View {
                 .keyboardType(.namePhonePad)
                 .focused($focusedField, equals: .phoneNumber)
                 .submitLabel(.next)
+                .accessibilityLabel("Phone number")
             
             Divider()
             
@@ -50,6 +53,7 @@ struct PersonalInfoView: View {
                 .autocorrectionDisabled()
                 .focused($focusedField, equals: .email)
                 .submitLabel(.next)
+                .accessibilityLabel("Email address")
             
             Divider()
             
@@ -63,6 +67,7 @@ struct PersonalInfoView: View {
             .textInputAutocapitalization(.never)
             .focused($focusedField, equals: .website)
             .submitLabel(.done)
+            .accessibilityLabel("Website (optional)")
         }
         .onSubmit {
             switch focusedField {

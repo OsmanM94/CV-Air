@@ -55,7 +55,7 @@ struct CVDetailView: View {
             .navigationTitle("Edit")
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    EditButton()
+//                    EditButton()
                     
                     Button(action: {
                         generateAndExportPDF()

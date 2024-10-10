@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HistoryView: View {
     @Binding var history: [HistoryEntry]
-    @State private var newEntry = HistoryEntry(title: "", subtitle: "", startYear: Calendar.current.component(.year, from: Date()), endYear: 2024, details: [])
+    @State private var newEntry = HistoryEntry(title: "", subtitle: "", startYear: Calendar.current.component(.year, from: Date()), endYear: nil, details: [])
     
     @State private var showingError: Bool = false
     @State private var errorMessage: String = ""
@@ -82,7 +82,7 @@ struct HistoryView: View {
             .accessibilityLabel("Start Year")
             
             Picker("To", selection: Binding(
-                get: { newEntry.endYear },
+                get: { newEntry.endYear ?? Calendar.current.component(.year, from: Date()) },
                 set: { newEntry.endYear = $0 }
             )) {
                 ForEach(1950...Calendar.current.component(.year, from: Date()), id: \.self) { year in
@@ -101,12 +101,7 @@ struct HistoryView: View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(newEntry.details.indices, id: \.self) { index in
                 HStack {
-                    Label {
-                        Text(newEntry.details[index])
-                    } icon: {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                    }
+                    Text(newEntry.details[index])
                     .accessibilityLabel("\(detailsTitle) \(index + 1): \(newEntry.details[index])")
                     
                     Spacer()

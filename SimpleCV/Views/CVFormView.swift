@@ -25,6 +25,7 @@ struct CVFormView: View {
             
             Section(header: Text("Summary")) {
                 TextField("A short summary of yourself", text: $cv.summary, axis: .vertical)
+                    .accessibilityLabel("Add a short summary about yourself. Keep it simple and to the point.")
             }
             
             Section {
@@ -104,6 +105,11 @@ struct CVFormView: View {
                         .foregroundStyle(.blue)
                         .fontWeight(.semibold)
                 }
+            }
+            ToolbarItem {
+                EditButton()
+                    .foregroundStyle(.blue)
+                    
             }
         }
         .buttonStyle(.plain)

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct GuidanceView: View {
+    @State private var showExampleCV: Bool = false
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -77,6 +79,21 @@ struct GuidanceView: View {
                     .navigationTitle("The simpler, the better")
                 }
             }
+            .sheet(isPresented: $showExampleCV, content: {
+                ExampleCView()
+                    .presentationDragIndicator(.visible)
+            })
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showExampleCV.toggle()
+                    } label: {
+                        Text("Example CV")
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+            }
         }
     }
 }
@@ -101,7 +118,7 @@ fileprivate struct Row<Content: View>: View {
     }
 }
 
-struct BulletList: View {
+fileprivate struct BulletList: View {
     let items: [String]
     
     var body: some View {
@@ -112,6 +129,23 @@ struct BulletList: View {
                         .font(.subheadline)
                     Text(item)
                         .font(.subheadline)
+                }
+            }
+        }
+    }
+}
+
+fileprivate struct ExampleCView: View {
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundStyle(Color(.systemGray5))
+                .ignoresSafeArea()
+            VStack {
+                ZoomImages {
+                    Image("exampleCV")
+                        .resizable()
+                        .scaledToFit()
                 }
             }
         }
