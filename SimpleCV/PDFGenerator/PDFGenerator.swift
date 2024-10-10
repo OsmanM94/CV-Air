@@ -8,54 +8,54 @@ enum PDFGenerationError: Error {
 
 struct CVPDFGenerator {
     static func generatePDF(for cv: CV) async -> Data {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                let pdfMetaData = [
-                    kCGPDFContextCreator: "CV",
-                    kCGPDFContextAuthor: cv.personalInfo.name
-                ]
-                let format = UIGraphicsPDFRendererFormat()
-                format.documentInfo = pdfMetaData as [String: Any]
-                
-                let pageWidth = 8.5 * 72.0
-                let pageHeight = 11 * 72.0
-                let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
-                
-                let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
-                
-                let data = renderer.pdfData { context in
-                    var currentYOffset: CGFloat = 0
-                    
-                    context.beginPage()
-                    
-                    currentYOffset = addTitle(cv.personalInfo.name, pageRect: pageRect)
-                    currentYOffset = addPersonalInfo(cv.personalInfo, pageRect: pageRect, yOffset: currentYOffset)
-                    
-                    if !cv.summary.isEmpty {
-                        currentYOffset = addSection(title: "Summary", content: [cv.summary], pageRect: pageRect, yOffset: currentYOffset, context: context)
-                    }
-                    
-                    if !cv.professionalHistory.isEmpty {
-                        currentYOffset = addProfessionalHistory(cv.professionalHistory, pageRect: pageRect, yOffset: currentYOffset, context: context)
-                    }
-                    
-                    if !cv.educationalHistory.isEmpty {
-                        currentYOffset = addEducationalHistory(cv.educationalHistory, pageRect: pageRect, yOffset: currentYOffset, context: context)
-                    }
-                    
-                    if !cv.projects.isEmpty {
-                        currentYOffset = addProjects(cv.projects, pageRect: pageRect, yOffset: currentYOffset, context: context)
-                    }
-                    
-                    if !cv.skills.isEmpty {
-                        currentYOffset = addSection(title: "Skills", content: [cv.skills.joined(separator: " • ")], pageRect: pageRect, yOffset: currentYOffset, context: context)
-                    }
-                }
-                
-                continuation.resume(returning: data)
-            }
-        }
-    }
+           await withCheckedContinuation { continuation in
+               DispatchQueue.global(qos: .userInitiated).async {
+                   let pdfMetaData = [
+                       kCGPDFContextCreator: "CV",
+                       kCGPDFContextAuthor: cv.personalInfo.name
+                   ]
+                   let format = UIGraphicsPDFRendererFormat()
+                   format.documentInfo = pdfMetaData as [String: Any]
+                   
+                   let pageWidth = 8.5 * 72.0
+                   let pageHeight = 11 * 72.0
+                   let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
+                   
+                   let renderer = UIGraphicsPDFRenderer(bounds: pageRect, format: format)
+                   
+                   let data = renderer.pdfData { context in
+                       var currentYOffset: CGFloat = 0
+                       
+                       context.beginPage()
+                       
+                       currentYOffset = addTitle(cv.personalInfo.name, pageRect: pageRect)
+                       currentYOffset = addPersonalInfo(cv.personalInfo, pageRect: pageRect, yOffset: currentYOffset)
+                       
+                       if !cv.summary.isEmpty {
+                           currentYOffset = addSection(title: "Summary", content: [cv.summary], pageRect: pageRect, yOffset: currentYOffset, context: context)
+                       }
+                       
+                       if !cv.professionalHistory.isEmpty {
+                           currentYOffset = addHistorySection(title: "Professional History", history: cv.professionalHistory, pageRect: pageRect, yOffset: currentYOffset, context: context)
+                       }
+                       
+                       if !cv.educationalHistory.isEmpty {
+                           currentYOffset = addHistorySection(title: "Educational History", history: cv.educationalHistory, pageRect: pageRect, yOffset: currentYOffset, context: context)
+                       }
+                       
+                       if !cv.projects.isEmpty {
+                           currentYOffset = addProjects(cv.projects, pageRect: pageRect, yOffset: currentYOffset, context: context)
+                       }
+                       
+                       if !cv.skills.isEmpty {
+                           currentYOffset = addSection(title: "Skills", content: [cv.skills.joined(separator: " • ")], pageRect: pageRect, yOffset: currentYOffset, context: context)
+                       }
+                   }
+                   
+                   continuation.resume(returning: data)
+               }
+           }
+       }
     
     private static func addTitle(_ title: String, pageRect: CGRect) -> CGFloat {
         let titleFont = UIFont.systemFont(ofSize: 24.0, weight: .bold)
@@ -97,46 +97,6 @@ struct CVPDFGenerator {
         
         return yPosition + 10
     }
-    
-//    private static func addSection(title: String, content: [String], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
-//        let titleFont = UIFont.systemFont(ofSize: 16.0, weight: .bold)
-//        let contentFont = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-//        
-//        let titleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: titleFont]
-//        let contentAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: contentFont]
-//        
-//        let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
-//        let titleSize = attributedTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-//        
-//        var yPosition = yOffset
-//        
-//        // Check if there's enough space for the title and at least some content
-//        if yPosition + titleSize.height + 30 > pageRect.height - 72 {
-//            context.beginPage()
-//            yPosition = 36
-//        }
-//        
-//        // Draw the title
-//        let titleRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: titleSize.height)
-//        attributedTitle.draw(in: titleRect)
-//        yPosition += titleSize.height + 10
-//        
-//        for line in content {
-//            let attributedContent = NSAttributedString(string: line, attributes: contentAttributes)
-//            let contentSize = attributedContent.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-//            
-//            if yPosition + contentSize.height > pageRect.height - 72 {
-//                context.beginPage()
-//                yPosition = 36
-//            }
-//            
-//            let contentRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: contentSize.height)
-//            attributedContent.draw(in: contentRect)
-//            yPosition += contentSize.height + 5
-//        }
-//        
-//        return yPosition + 10
-//    }
     
     private static func addSection(title: String, content: [String], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
         let titleFont = UIFont.systemFont(ofSize: 16.0, weight: .bold)
@@ -183,146 +143,74 @@ struct CVPDFGenerator {
         return yPosition + 10
     }
     
-    private static func addProfessionalHistory(_ history: [ProfessionalExperience], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
-        let titleFont = UIFont.systemFont(ofSize: 16.0, weight: .bold)
-        let titleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: titleFont]
-        
-        let title = "Professional History"
-        let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
-        let titleSize = attributedTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-        
-        var yPosition = yOffset
-        
-        // Check if there's enough space for the title and at least one entry
-        if yPosition + titleSize.height + 60 > pageRect.height - 72 {
-            context.beginPage()
-            yPosition = 36
-        }
-        
-        // Draw the title
-        let titleRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: titleSize.height)
-        attributedTitle.draw(in: titleRect)
-        yPosition += titleSize.height + 10
-        
-        for experience in history {
-            if yPosition > pageRect.height - 72 {
+    private static func addHistorySection(title: String, history: [HistoryEntry], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
+            let titleFont = UIFont.systemFont(ofSize: 16.0, weight: .bold)
+            let entryTitleFont = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
+            let detailsFont = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+            
+            let titleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: titleFont]
+            let entryTitleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: entryTitleFont]
+            let detailsAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: detailsFont]
+            
+            let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
+            let titleSize = attributedTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+            
+            var yPosition = yOffset
+            
+            // Check if there's enough space for the title and at least one entry
+            if yPosition + titleSize.height + 60 > pageRect.height - 72 {
                 context.beginPage()
                 yPosition = 36
             }
             
-            let companyFont = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
-            let detailsFont = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+            // Draw the title
+            let titleRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: titleSize.height)
+            attributedTitle.draw(in: titleRect)
+            yPosition += titleSize.height + 10
             
-            let companyAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: companyFont]
-            let detailsAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: detailsFont]
-            
-            let companyText = "\(experience.company), \(experience.position)"
-            let dateText = formatYearRange(start: experience.startYear, end: experience.endYear)
-            
-            let attributedCompany = NSAttributedString(string: companyText, attributes: companyAttributes)
-            let attributedDate = NSAttributedString(string: dateText, attributes: detailsAttributes)
-            
-            let companySize = attributedCompany.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-            let dateSize = attributedDate.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-            
-            let companyRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: companySize.height)
-            let dateRect = CGRect(x: 36, y: yPosition + companySize.height, width: pageRect.width - 72, height: dateSize.height)
-            
-            attributedCompany.draw(in: companyRect)
-            attributedDate.draw(in: dateRect)
-            
-            yPosition += companySize.height + dateSize.height + 10
-            
-            for responsibility in experience.responsibilities {
+            for entry in history {
                 if yPosition > pageRect.height - 72 {
                     context.beginPage()
                     yPosition = 36
                 }
                 
-                let bulletPoint = "• \(responsibility)"
-                let attributedBullet = NSAttributedString(string: bulletPoint, attributes: detailsAttributes)
-                let bulletSize = attributedBullet.boundingRect(with: CGSize(width: pageRect.width - 82, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-                let bulletRect = CGRect(x: 46, y: yPosition, width: pageRect.width - 82, height: bulletSize.height)
-                attributedBullet.draw(in: bulletRect)
-                yPosition += bulletSize.height + 5
-            }
-            
-            yPosition += 10
-        }
-        
-        return yPosition
-    }
-    
-    private static func addEducationalHistory(_ history: [Education], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
-        let titleFont = UIFont.systemFont(ofSize: 16.0, weight: .bold)
-        let schoolFont = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
-        let detailsFont = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        
-        let titleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: titleFont]
-        let schoolAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: schoolFont]
-        let detailsAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: detailsFont]
-        
-        let title = "Educational History"
-        let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
-        let titleSize = attributedTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-        
-        var yPosition = yOffset
-        
-        // Check if there's enough space for the title and at least one education entry
-        if yPosition + titleSize.height + 60 > pageRect.height - 72 {
-            context.beginPage()
-            yPosition = 36
-        }
-        
-        // Draw the title
-        let titleRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: titleSize.height)
-        attributedTitle.draw(in: titleRect)
-        yPosition += titleSize.height + 10
-        
-        for education in history {
-            let schoolText = education.institution
-            let degreeText = "\(education.degree), \(formatYearRange(start: education.startYear, end: education.endYear))"
-            
-            let attributedSchool = NSAttributedString(string: schoolText, attributes: schoolAttributes)
-            let attributedDegree = NSAttributedString(string: degreeText, attributes: detailsAttributes)
-            
-            let schoolSize = attributedSchool.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-            let degreeSize = attributedDegree.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-            
-            let totalHeight = schoolSize.height + degreeSize.height + (education.details.isEmpty ? 0 : 20)
-            
-            if yPosition + totalHeight > pageRect.height - 72 {
-                context.beginPage()
-                yPosition = 36
-            }
-            
-            let schoolRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: schoolSize.height)
-            attributedSchool.draw(in: schoolRect)
-            yPosition += schoolSize.height + 5
-            
-            let degreeRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: degreeSize.height)
-            attributedDegree.draw(in: degreeRect)
-            yPosition += degreeSize.height + 5
-            
-            if !education.details.isEmpty {
-                let attributedDetails = NSAttributedString(string: education.details, attributes: detailsAttributes)
-                let detailsSize = attributedDetails.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+                let entryTitleText = "\(entry.title), \(entry.subtitle)"
+                let dateText = formatYearRange(start: entry.startYear, end: entry.endYear)
                 
-                if yPosition + detailsSize.height > pageRect.height - 72 {
-                    context.beginPage()
-                    yPosition = 36
+                let attributedEntryTitle = NSAttributedString(string: entryTitleText, attributes: entryTitleAttributes)
+                let attributedDate = NSAttributedString(string: dateText, attributes: detailsAttributes)
+                
+                let entryTitleSize = attributedEntryTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+                let dateSize = attributedDate.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+                
+                let entryTitleRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: entryTitleSize.height)
+                let dateRect = CGRect(x: 36, y: yPosition + entryTitleSize.height, width: pageRect.width - 72, height: dateSize.height)
+                
+                attributedEntryTitle.draw(in: entryTitleRect)
+                attributedDate.draw(in: dateRect)
+                
+                yPosition += entryTitleSize.height + dateSize.height + 10
+                
+                for detail in entry.details {
+                    if yPosition > pageRect.height - 72 {
+                        context.beginPage()
+                        yPosition = 36
+                    }
+                    
+                    let bulletPoint = "• \(detail)"
+                    let attributedBullet = NSAttributedString(string: bulletPoint, attributes: detailsAttributes)
+                    let bulletSize = attributedBullet.boundingRect(with: CGSize(width: pageRect.width - 82, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+                    let bulletRect = CGRect(x: 46, y: yPosition, width: pageRect.width - 82, height: bulletSize.height)
+                    attributedBullet.draw(in: bulletRect)
+                    yPosition += bulletSize.height + 5
                 }
                 
-                let detailsRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: detailsSize.height)
-                attributedDetails.draw(in: detailsRect)
-                yPosition += detailsSize.height + 10
+                yPosition += 10
             }
             
-            yPosition += 10
+            return yPosition
         }
         
-        return yPosition
-    }
     
     private static func addProjects(_ projects: [Project], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
         let titleFont = UIFont.systemFont(ofSize: 16.0, weight: .bold)

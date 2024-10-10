@@ -26,34 +26,41 @@ struct CVFormView: View {
             
             Section(header: Text("Summary")) {
                 TextField("A short summary of yourself", text: $cv.summary, axis: .vertical)
-                    .autocorrectionDisabled()
             }
             
             Section {
                 DisclosureGroup {
-                    ProfessionalExperienceView(professionalHistory: $cv.professionalHistory)
+                    HistoryView(
+                        history: $cv.professionalHistory,
+                        titlePlaceholder: "Company",
+                        subtitlePlaceholder: "Position",
+                        detailsTitle: "Responsibilities",
+                        addButtonTitle: "Add Experience"
+                    )
                 } label: {
-                    Text("Professional Experience")
+                    Text("Professional history")
                         .foregroundStyle(.blue)
                 }
             }
 
             Section {
                 DisclosureGroup {
-                    EducationalHistoryView(educationalHistory: $cv.educationalHistory)
+                    HistoryView(
+                        history: $cv.educationalHistory,
+                        titlePlaceholder: "Institution",
+                        subtitlePlaceholder: "Degree",
+                        detailsTitle: "Details",
+                        addButtonTitle: "Add Education"
+                    )
                 } label: {
-                    Text("Educational History")
+                    Text("Educational history")
                         .foregroundStyle(.blue)
                 }
             }
             
             Section {
                 DisclosureGroup {
-                    ProjectView(
-                        projects: Binding(
-                            get: { cv.projects },
-                            set: { cv.projects = $0 }
-                        ))
+                    ProjectView(projects: $cv.projects)
                 } label: {
                     Label("Projects", systemImage: "folder.fill")
                         .foregroundStyle(.blue)
@@ -130,5 +137,3 @@ struct CVFormView: View {
         !cv.personalInfo.address.isEmpty
     }
 }
-
-

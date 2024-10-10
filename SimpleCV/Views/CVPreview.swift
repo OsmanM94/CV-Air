@@ -39,42 +39,12 @@ struct CVPreview: View {
                     
                     // Professional History
                     if !cv.professionalHistory.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("Professional History")
-                                .font(.system(size: 16, weight: .bold))
-                            ForEach(cv.professionalHistory) { experience in
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text("\(experience.company), \(experience.position)")
-                                        .font(.system(size: 14, weight: .semibold))
-                                    Text(formatYearRange(start: experience.startYear, end: experience.endYear))
-                                        .font(.system(size: 12))
-                                    ForEach(experience.responsibilities, id: \.self) { responsibility in
-                                        Text("• \(responsibility)")
-                                            .font(.system(size: 12))
-                                    }
-                                }
-                                .padding(.bottom, 5)
-                            }
-                        }
+                        historySection(title: "Professional History", entries: cv.professionalHistory)
                     }
                     
                     // Educational History
                     if !cv.educationalHistory.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("Educational History")
-                                .font(.system(size: 16, weight: .bold))
-                            ForEach(cv.educationalHistory) { education in
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text(education.institution)
-                                        .font(.system(size: 14, weight: .semibold))
-                                    Text("\(education.degree), \(formatYearRange(start: education.startYear, end: education.endYear))")
-                                        .font(.system(size: 12))
-                                    Text(education.details)
-                                        .font(.system(size: 12))
-                                }
-                                .padding(.bottom, 5)
-                            }
-                        }
+                        historySection(title: "Educational History", entries: cv.educationalHistory)
                     }
                     
                     // Projects
@@ -112,5 +82,24 @@ struct CVPreview: View {
         }
         .preferredColorScheme(.dark)
     }
+    
+    private func historySection(title: String, entries: [HistoryEntry]) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.system(size: 16, weight: .bold))
+            ForEach(entries) { entry in
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("\(entry.title), \(entry.subtitle)")
+                        .font(.system(size: 14, weight: .semibold))
+                    Text(formatYearRange(start: entry.startYear, end: entry.endYear))
+                        .font(.system(size: 12))
+                    ForEach(entry.details, id: \.self) { detail in
+                        Text("• \(detail)")
+                            .font(.system(size: 12))
+                    }
+                }
+                .padding(.bottom, 5)
+            }
+        }
+    }
 }
-

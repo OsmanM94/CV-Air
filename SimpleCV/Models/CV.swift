@@ -12,13 +12,13 @@ import SwiftData
 class CV {
     var personalInfo: PersonalInfo
     var summary: String
-    var professionalHistory: [ProfessionalExperience]
-    var educationalHistory: [Education]
+    var professionalHistory: [HistoryEntry]
+    var educationalHistory: [HistoryEntry]
     var projects: [Project]
     var skills: [String]
     var pdfData: Data?
     
-    init(personalInfo: PersonalInfo, summary: String, professionalHistory: [ProfessionalExperience], educationalHistory: [Education], projects: [Project], skills: [String]) {
+    init(personalInfo: PersonalInfo, summary: String, professionalHistory: [HistoryEntry], educationalHistory: [HistoryEntry], projects: [Project], skills: [String]) {
         self.personalInfo = personalInfo
         self.summary = summary
         self.professionalHistory = professionalHistory

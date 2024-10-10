@@ -23,7 +23,6 @@ struct ProjectView: View {
                             .autocorrectionDisabled()
                         
                         TextField("Project Details", text: $tempDetails, axis: .vertical)
-                            .autocorrectionDisabled()
                      
                         HStack(spacing: 20) {
                             Button {
@@ -85,7 +84,6 @@ struct ProjectView: View {
             set: { newProject.details = $0 }
         ))
         .frame(minHeight: 200)
-        .autocorrectionDisabled()
         .background(Color(.black).opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         
