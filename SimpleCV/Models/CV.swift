@@ -18,12 +18,13 @@ class CV {
     var skills: [String]
     var pdfData: Data?
     
-    init(personalInfo: PersonalInfo, summary: String, professionalHistory: [HistoryEntry], educationalHistory: [HistoryEntry], projects: [Project], skills: [String]) {
+    init(personalInfo: PersonalInfo, summary: String, professionalHistory: [HistoryEntry], educationalHistory: [HistoryEntry], projects: [Project], skills: [String], pdfData: Data? = nil) {
         self.personalInfo = personalInfo
         self.summary = summary
         self.professionalHistory = professionalHistory
         self.educationalHistory = educationalHistory
         self.projects = projects
         self.skills = skills
+        self.pdfData = pdfData
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HistoryView: View {
     @Binding var history: [HistoryEntry]
-    @State private var newEntry = HistoryEntry(title: "", subtitle: "", startYear: Calendar.current.component(.year, from: Date()), endYear: nil, details: [])
+    @State private var newEntry = HistoryEntry(title: "", subtitle: "", startYear: Calendar.current.component(.year, from: Date()), endYear: 2024, details: [])
     
     @State private var showingError: Bool = false
     @State private var errorMessage: String = ""
@@ -78,11 +78,11 @@ struct HistoryView: View {
             .padding(8)
             .background(Color.black.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            .alignmentGuide(.leading, computeValue: { _ in 0})
+            .alignmentGuide(.leading, computeValue: { _ in 0 })
             .accessibilityLabel("Start Year")
             
             Picker("To", selection: Binding(
-                get: { newEntry.endYear ?? Calendar.current.component(.year, from: Date()) },
+                get: { newEntry.endYear },
                 set: { newEntry.endYear = $0 }
             )) {
                 ForEach(1950...Calendar.current.component(.year, from: Date()), id: \.self) { year in
@@ -144,7 +144,7 @@ struct HistoryView: View {
         Button(addButtonTitle) {
             if validateNewEntry() {
                 history.append(newEntry)
-                newEntry = HistoryEntry(title: "", subtitle: "", startYear: Calendar.current.component(.year, from: Date()), endYear: nil, details: [])
+                newEntry = HistoryEntry(title: "", subtitle: "", startYear: Calendar.current.component(.year, from: Date()), endYear: 2024, details: [])
                 showingError = false
             }
         }
@@ -256,35 +256,19 @@ struct HistoryView: View {
                 .fontWeight(.medium)
                 .padding(.top, 4)
                         
-            if let tempEntry = tempEntry {
-                ForEach(Array(tempEntry.details.enumerated()), id: \.offset) { index, detail in
-                    HStack {
-                        if editingDetailIndex == index {
-                            TextField("\(detailsTitle)", text: Binding(
-                                get: { tempEntry.details[index] },
-                                set: { newValue in
-                                    tempEntry.details[index] = newValue
-                                }
-                            ), axis: .vertical)
-                            .submitLabel(.return)
-                            
-                        } else {
-                            Text(detail)
-                                .onTapGesture {
-                                    editingDetailIndex = index
-                                }
-                        }
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            tempEntry.details.remove(at: index)
-                        }) {
-                            Image(systemName: "trash")
-                                .foregroundStyle(.red)
-                        }
-                        .accessibilityLabel("Delete \(detailsTitle): \(detail)")
+            ForEach(tempEntry?.details ?? [], id: \.self) { detail in
+                HStack {
+                    Text(detail)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        tempEntry?.details.removeAll { $0 == detail }
+                    }) {
+                        Image(systemName: "trash")
+                            .foregroundStyle(.red)
                     }
+                    .accessibilityLabel("Delete \(detailsTitle): \(detail)")
                 }
             }
             
