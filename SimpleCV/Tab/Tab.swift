@@ -29,6 +29,11 @@ struct Tab: View {
                     Label("Guidance", systemImage: "info.circle.fill")
                 }
                 .tag(2)
+            
+            SupportView()
+                .tabItem {
+                    Label("Support", systemImage: "phone.fill")
+                }
         }
     }
 }

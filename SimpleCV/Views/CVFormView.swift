@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct CVFormView: View {
     @Bindable var cv: CV
     var onSave: (() async throws -> Void)?
@@ -109,7 +108,7 @@ struct CVFormView: View {
         }
         .buttonStyle(.plain)
         .alert(isPresented: $showingAlert) {
-            Alert(title: Text("Save Status"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            Alert(title: Text("Status"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
         }
     }
     

@@ -18,8 +18,8 @@ struct HistoryView: View {
     @State private var tempEntry: HistoryEntry?
     
     @State private var newDetail: String = ""
-    
     @State private var showingSaveConfirmation: Bool = false
+    @State private var editingDetailIndex: Int? = nil
     
     let titlePlaceholder: String
     let subtitlePlaceholder: String
@@ -152,6 +152,8 @@ struct HistoryView: View {
         .accessibilityLabel(addButtonTitle)
     }
     
+    // MARK: - MainView
+    
     private func displayView(for entry: HistoryEntry) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -198,6 +200,8 @@ struct HistoryView: View {
             }
         }
     }
+    
+    // MARK: - EditView
     
     private func editingView(for entry: HistoryEntry) -> some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -251,20 +255,36 @@ struct HistoryView: View {
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .padding(.top, 4)
-            
-            ForEach(tempEntry?.details ?? [], id: \.self) { detail in
-                HStack {
-                    Text(detail)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        tempEntry?.details.removeAll { $0 == detail }
-                    }) {
-                        Image(systemName: "trash")
-                            .foregroundStyle(.red)
+                        
+            if let tempEntry = tempEntry {
+                ForEach(Array(tempEntry.details.enumerated()), id: \.offset) { index, detail in
+                    HStack {
+                        if editingDetailIndex == index {
+                            TextField("\(detailsTitle)", text: Binding(
+                                get: { tempEntry.details[index] },
+                                set: { newValue in
+                                    tempEntry.details[index] = newValue
+                                }
+                            ), axis: .vertical)
+                            .submitLabel(.return)
+                            
+                        } else {
+                            Text(detail)
+                                .onTapGesture {
+                                    editingDetailIndex = index
+                                }
+                        }
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            tempEntry.details.remove(at: index)
+                        }) {
+                            Image(systemName: "trash")
+                                .foregroundStyle(.red)
+                        }
+                        .accessibilityLabel("Delete \(detailsTitle): \(detail)")
                     }
-                    .accessibilityLabel("Delete \(detailsTitle): \(detail)")
                 }
             }
             
@@ -291,19 +311,22 @@ struct HistoryView: View {
             
             HStack(spacing: 20) {
                 Button("Save") {
-                    showingSaveConfirmation = true
+                    showingSaveConfirmation.toggle()
                 }
                 .foregroundStyle(.blue)
                 .accessibilityLabel("Save changes")
                 .confirmationDialog("Are you sure you want to save these changes?", isPresented: $showingSaveConfirmation) {
-                    Button("Save", role: .destructive) {
+                    Button("Save") {
                         saveEdits()
+                        editingDetailIndex = nil
                     }
                     Button("Cancel", role: .cancel) { }
                 }
             }
         }
     }
+    
+    // MARK: - Private methods
     
     private func startEditing(_ entry: HistoryEntry) {
         editingEntryId = entry.id

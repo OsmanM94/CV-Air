@@ -13,7 +13,7 @@ struct ProjectView: View {
     @State private var editingProjectId: UUID? = nil
     @State private var tempTitle: String = ""
     @State private var tempDetails: String = ""
-    
+        
     var body: some View {
         List {
             ForEach(projects, id: \.id) { project in

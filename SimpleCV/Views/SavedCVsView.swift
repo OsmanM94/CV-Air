@@ -30,6 +30,7 @@ struct SavedCVsView: View {
             }
             .toolbar {
                 EditButton()
+                    .disabled(savedCVs.isEmpty)
             }
         }
     }
