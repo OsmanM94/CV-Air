@@ -41,7 +41,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             CVFormView(cv: cv, onSave: saveCV, isNewCV: true)
-                .navigationTitle("Create CV")
+                .navigationTitle("Create")
         }
     }
     

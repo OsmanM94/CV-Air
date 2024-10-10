@@ -43,7 +43,7 @@ struct ProfessionalExperienceView: View {
                             .padding(.top, 4)
                         
                         ForEach(experience.responsibilities, id: \.self) { responsibility in
-                            HStack {
+                            HStack(alignment: .top, spacing: 8) {
                                 Text("•")
                                     .foregroundStyle(.blue)
                                 Text(responsibility)
@@ -55,7 +55,6 @@ struct ProfessionalExperienceView: View {
                 .padding()
                 .background(Color.black.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                
             }
             .onMove(perform: moveExperience)
             .onDelete(perform: deleteExperience)
