@@ -26,23 +26,12 @@ struct ProjectView: View {
                         TextField("Project Details", text: $tempDetails, axis: .vertical)
                             .accessibilityLabel("Edit Project Details")
                         
-                        HStack(spacing: 20) {
-                            Button {
-                                saveEdits(for: project)
-                            } label: {
-                                Text("Save")
-                            }
-                            .foregroundStyle(.blue)
-                            .accessibilityLabel("Save Project Edits")
-                            
-                            Button(action: {
-                                cancelEditing()
-                            }, label: {
-                                Text("Cancel")
-                            })
-                            .foregroundStyle(.red)
-                            .accessibilityLabel("Cancel Project Edits")
+                        SaveCancelButtons {
+                            saveEdits(for: project)
+                        } cancellingAction: {
+                            cancelEditing()
                         }
+                        
                     } else {
                         HStack {
                             Text(project.title)
@@ -135,7 +124,6 @@ struct ProjectView: View {
     }
     
     private func addNewProject() {
-//        projects = []
         projects.append(newProject)
         newProject = Project(title: "", details: "")
     }

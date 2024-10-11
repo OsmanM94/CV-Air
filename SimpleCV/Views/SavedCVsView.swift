@@ -46,37 +46,11 @@ struct SavedCVsView: View {
 
 struct CVDetailView: View {
     @Bindable var cv: CV
-    @State private var showingShareSheet: Bool = false
-    @State private var isGeneratingPDF: Bool = false
     @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         CVFormView(cv: cv, onSave: updateCV, isNewCV: false)
             .navigationTitle("Edit")
-            .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-//                    EditButton()
-                    
-                    Button(action: {
-                        generateAndExportPDF()
-                    }) {
-                        HStack {
-                            if isGeneratingPDF {
-                                ProgressView()
-                                    
-                            } else {
-                                Image(systemName: "square.and.arrow.up")
-                            }
-                        }
-                    }
-                    .disabled(isGeneratingPDF)
-                }
-            }
-            .sheet(isPresented: $showingShareSheet) {
-                if let data = cv.pdfData {
-                    ShareSheet(activityItems: [data])
-                }
-            }
     }
     
     private func updateCV() {
@@ -86,22 +60,7 @@ struct CVDetailView: View {
             print("Error updating CV: \(error)")
         }
     }
-    
-    private func generateAndExportPDF() {
-        isGeneratingPDF = true
-        
-        Task {
-            let pdfData = await CVPDFGenerator.generatePDF(for: cv)
-            await MainActor.run {
-                cv.pdfData = pdfData
-                isGeneratingPDF = false
-                showingShareSheet = true
-            }
-        }
-    }
 }
-
-struct TimeoutError: Error {}
 
 #Preview {
     SavedCVsView()

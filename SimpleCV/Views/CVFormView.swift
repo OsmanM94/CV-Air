@@ -17,6 +17,9 @@ struct CVFormView: View {
     @State private var alertMessage: String = ""
     @State private var saveSuccess: Bool = false
     
+    @State private var showingShareSheet: Bool = false
+    @State private var isGeneratingPDF: Bool = false
+    
     var body: some View {
         Form {
             Section(header: Text("Personal Information")) {
@@ -95,6 +98,22 @@ struct CVFormView: View {
             .foregroundStyle(.blue)
         }
         .toolbar {
+            Menu {
+                EditButton()
+                    .foregroundStyle(.blue)
+                
+                Button(action: {
+                    generateAndExportPDF()
+                }) {
+                    Label("Export PDF", systemImage: "square.and.arrow.up")
+                }
+                .disabled(isGeneratingPDF)
+                
+            } label: {
+                Image(systemName: "ellipsis.circle")
+            }
+        }
+        .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
                 
@@ -106,15 +125,28 @@ struct CVFormView: View {
                         .fontWeight(.semibold)
                 }
             }
-            ToolbarItem {
-                EditButton()
-                    .foregroundStyle(.blue)
-                    
-            }
         }
         .buttonStyle(.plain)
         .alert(isPresented: $showingAlert) {
             Alert(title: Text("Status"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+        }
+        .sheet(isPresented: $showingShareSheet) {
+            if let data = cv.pdfData {
+                ShareSheet(activityItems: [data])
+            }
+        }
+    }
+    
+    private func generateAndExportPDF() {
+        isGeneratingPDF = true
+        
+        Task {
+            let pdfData = await CVPDFGenerator.generatePDF(for: cv)
+            await MainActor.run {
+                cv.pdfData = pdfData
+                isGeneratingPDF = false
+                showingShareSheet = true
+            }
         }
     }
     

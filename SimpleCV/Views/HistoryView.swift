@@ -13,13 +13,13 @@ struct HistoryView: View {
     
     @State private var showingError: Bool = false
     @State private var errorMessage: String = ""
+    @State private var showingDeleteAlert = false
+    @State private var deleteIndex: Int?
     
     @State private var editingEntryId: UUID? = nil
     @State private var tempEntry: HistoryEntry?
     
     @State private var newDetail: String = ""
-    @State private var showingSaveConfirmation: Bool = false
-    @State private var editingDetailIndex: Int? = nil
     
     let titlePlaceholder: String
     let subtitlePlaceholder: String
@@ -199,7 +199,7 @@ struct HistoryView: View {
     // MARK: - EditView
     
     private func editingView(for entry: HistoryEntry) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 30) {
             TextField(titlePlaceholder, text: Binding(
                 get: { tempEntry?.title ?? "" },
                 set: { tempEntry?.title = $0 }
@@ -250,21 +250,40 @@ struct HistoryView: View {
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .padding(.top, 4)
-                        
-            ForEach(tempEntry?.details ?? [], id: \.self) { detail in
-                HStack {
-                    Text(detail)
-                    
-                    Spacer()
+                                    
+            ForEach(Array((tempEntry?.details ?? []).enumerated()), id: \.offset) { index, detail in
+                HStack(spacing: 15) {
+                    TextField("Edit \(detailsTitle)", text: Binding(
+                        get: { String(describing: detail) },
+                        set: { newValue in
+                            if var details = tempEntry?.details {
+                                details[index] = newValue
+                                tempEntry?.details = details
+                            }
+                        }
+                    ), axis: .vertical)
+                    .accessibilityLabel("Edit \(detailsTitle) \(index + 1)")
                     
                     Button(action: {
-                        tempEntry?.details.removeAll { $0 == detail }
+                        deleteIndex = index
+                        showingDeleteAlert = true
                     }) {
                         Image(systemName: "trash")
                             .foregroundStyle(.red)
                     }
-                    .accessibilityLabel("Delete \(detailsTitle): \(detail)")
+                    .accessibilityLabel("Delete \(detailsTitle) \(index + 1)")
                 }
+            }
+            .alert("Delete Detail", isPresented: $showingDeleteAlert, presenting: deleteIndex) { index in
+                Button("Cancel", role: .cancel) {}
+                Button("Delete", role: .destructive) {
+                    if var details = tempEntry?.details, details.indices.contains(index) {
+                        details.remove(at: index)
+                        tempEntry?.details = details
+                    }
+                }
+            } message: { _ in
+                Text("Are you sure you want to delete this detail?")
             }
             
             HStack {
@@ -286,21 +305,12 @@ struct HistoryView: View {
                 .disabled(newDetail.isEmpty)
                 .accessibilityLabel("Add \(detailsTitle)")
             }
-            .padding([.top, .bottom])
+            .padding([.top, .bottom], 30)
             
-            HStack(spacing: 20) {
-                Button("Save") {
-                    showingSaveConfirmation.toggle()
-                }
-                .foregroundStyle(.blue)
-                .accessibilityLabel("Save changes")
-                .confirmationDialog("Are you sure you want to save these changes?", isPresented: $showingSaveConfirmation) {
-                    Button("Save") {
-                        saveEdits()
-                        editingDetailIndex = nil
-                    }
-                    Button("Cancel", role: .cancel) { }
-                }
+            SaveCancelButtons {
+                saveEdits()
+            } cancellingAction: {
+                cancelEditing()
             }
         }
     }
@@ -328,11 +338,11 @@ struct HistoryView: View {
         newDetail = ""
     }
     
-    func moveEntry(from source: IndexSet, to destination: Int) {
+    private func moveEntry(from source: IndexSet, to destination: Int) {
         history.move(fromOffsets: source, toOffset: destination)
     }
     
-    func deleteEntry(at offsets: IndexSet) {
+    private func deleteEntry(at offsets: IndexSet) {
         history.remove(atOffsets: offsets)
     }
     
