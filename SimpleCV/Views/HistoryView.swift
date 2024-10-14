@@ -1,9 +1,3 @@
-//
-//  HistoryView.swift
-//  SimpleCV
-//
-//  Created by asia on 10.10.2024.
-//
 
 import SwiftUI
 
@@ -21,6 +15,13 @@ struct HistoryView: View {
     
     @State private var newDetail: String = ""
     
+    @AppStorage("isTextAssistEnabled") private var isTextAssistEnabled: Bool = false
+    let characterLimits: [String: Int] = [
+        "title": 100,
+        "subtitle": 100,
+        "detail": 100
+    ]
+        
     let titlePlaceholder: String
     let subtitlePlaceholder: String
     let detailsTitle: String
@@ -52,6 +53,7 @@ struct HistoryView: View {
                 showingError = false
             }
             .accessibilityLabel(titlePlaceholder)
+            .characterLimit($newEntry.title, limit: characterLimits["title"] ?? 100, isTextAssistEnabled: isTextAssistEnabled)
         
         TextField(subtitlePlaceholder, text: $newEntry.subtitle)
             .autocorrectionDisabled()
@@ -59,6 +61,7 @@ struct HistoryView: View {
                 showingError = false
             }
             .accessibilityLabel(subtitlePlaceholder)
+            .characterLimit($newEntry.subtitle, limit: characterLimits["subtitle"] ?? 150, isTextAssistEnabled: isTextAssistEnabled)
         
         if showingError {
             Text(errorMessage)
@@ -119,6 +122,7 @@ struct HistoryView: View {
             HStack {
                 TextField("\(detailsTitle)", text: $newDetail)
                     .accessibilityLabel("New \(detailsTitle)")
+                    .characterLimit($newDetail, limit: characterLimits["detail"] ?? 100, isTextAssistEnabled: isTextAssistEnabled)
                 
                 Button {
                     if !newDetail.isEmpty {
@@ -158,24 +162,25 @@ struct HistoryView: View {
                 
                 Spacer()
                 
-                Text(formatYearRange(start: entry.startYear, end: entry.endYear))
-                    .font(.caption)
-                    .padding(6)
-                    .background(Color.blue.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                
-                Button(action: {
+                Button {
                     startEditing(entry)
-                }) {
+                } label: {
                     Image(systemName: "pencil")
-                        .imageScale(.medium)
+                        .imageScale(.large)
                         .foregroundStyle(.blue)
                 }
                 .accessibilityLabel("Edit \(entry.title)")
+                
             }
             Text(entry.subtitle)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+            
+            Text(formatYearRange(start: entry.startYear, end: entry.endYear))
+                .font(.caption)
+                .padding(6)
+                .background(Color.blue.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             
             if !entry.details.isEmpty {
                 Text(detailsTitle)
@@ -207,6 +212,10 @@ struct HistoryView: View {
             .textInputAutocapitalization(.words)
             .autocorrectionDisabled()
             .accessibilityLabel("Edit \(titlePlaceholder)")
+            .characterLimit(Binding(
+                get: { tempEntry?.title ?? "" },
+                set: { tempEntry?.title = $0 }
+            ), limit: characterLimits["title"] ?? 100, isTextAssistEnabled: isTextAssistEnabled)
             
             TextField(subtitlePlaceholder, text: Binding(
                 get: { tempEntry?.subtitle ?? "" },
@@ -214,6 +223,10 @@ struct HistoryView: View {
             ))
             .autocorrectionDisabled()
             .accessibilityLabel("Edit \(subtitlePlaceholder)")
+            .characterLimit(Binding(
+                get: { tempEntry?.subtitle ?? "" },
+                set: { tempEntry?.subtitle = $0 }
+            ), limit: characterLimits["subtitle"] ?? 150, isTextAssistEnabled: isTextAssistEnabled)
             
             HStack(spacing: 10) {
                 Picker("", selection: Binding(
@@ -263,6 +276,15 @@ struct HistoryView: View {
                         }
                     ), axis: .vertical)
                     .accessibilityLabel("Edit \(detailsTitle) \(index + 1)")
+                    .characterLimit(Binding(
+                        get: { String(describing: detail) },
+                        set: { newValue in
+                            if var details = tempEntry?.details {
+                                details[index] = newValue
+                                tempEntry?.details = details
+                            }
+                        }
+                    ), limit: characterLimits["detail"] ?? 200, isTextAssistEnabled: isTextAssistEnabled)
                     
                     Button(action: {
                         deleteIndex = index
@@ -289,7 +311,7 @@ struct HistoryView: View {
             HStack {
                 TextField("New \(detailsTitle)", text: $newDetail)
                     .accessibilityLabel("New \(detailsTitle)")
-                
+                    .characterLimit($newDetail, limit: characterLimits["detail"] ?? 100, isTextAssistEnabled: isTextAssistEnabled)
                 Spacer()
                 
                 Button {

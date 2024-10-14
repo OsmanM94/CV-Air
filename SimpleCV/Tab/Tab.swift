@@ -30,10 +30,11 @@ struct Tab: View {
                 }
                 .tag(2)
             
-            SupportView()
+            SettingsView()
                 .tabItem {
-                    Label("Support", systemImage: "phone.fill")
+                    Label("Settings", systemImage: "gear")
                 }
+                .tag(3)
         }
     }
 }

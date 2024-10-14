@@ -31,6 +31,7 @@ struct SupportView: View {
                         .font(.title3)
                     
                     Text("osmanmunur@yahoo.com")
+                        .accessibilityLabel("Tap to email developer")
                     
                     Text("I'm aiming to answer within 24 hours")
                         .font(.subheadline)
@@ -39,6 +40,7 @@ struct SupportView: View {
                 .padding(.bottom, 120)
             }
             .navigationTitle("Support")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

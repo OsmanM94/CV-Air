@@ -10,9 +10,25 @@
 		6259A1802CB52ECF00B73F2D /* SimpleCV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleCV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6257326D2CBC8A37006B3E1E /* Exceptions for "SimpleCV" folder in "SimpleCV" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Components/preview1/1 MarketingView.png",
+				"Components/preview1/2 MarketingView.png",
+				"Components/preview2/1 MarketingView.png",
+				"Components/preview2/2 MarketingView.png",
+			);
+			target = 6259A17F2CB52ECF00B73F2D /* SimpleCV */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6259A1822CB52ECF00B73F2D /* SimpleCV */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6257326D2CBC8A37006B3E1E /* Exceptions for "SimpleCV" folder in "SimpleCV" target */,
+			);
 			path = SimpleCV;
 			sourceTree = "<group>";
 		};
@@ -250,7 +266,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"SimpleCV/Preview Content\"";
 				DEVELOPMENT_TEAM = VNS8ZUW75C;
 				ENABLE_PREVIEWS = YES;
@@ -267,7 +283,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "-494.SimpleCV";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -282,7 +298,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"SimpleCV/Preview Content\"";
 				DEVELOPMENT_TEAM = VNS8ZUW75C;
 				ENABLE_PREVIEWS = YES;
@@ -299,7 +315,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "-494.SimpleCV";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

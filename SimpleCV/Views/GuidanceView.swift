@@ -88,7 +88,7 @@ struct GuidanceView: View {
                     Button {
                         showExampleCV.toggle()
                     } label: {
-                        Text("Example CV")
+                        Text("Example")
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.small)

@@ -1,9 +1,3 @@
-//
-//  FormView.swift
-//  SimpleCV
-//
-//  Created by asia on 08.10.2024.
-//
 
 import SwiftUI
 
@@ -20,6 +14,10 @@ struct CVFormView: View {
     @State private var showingShareSheet: Bool = false
     @State private var isGeneratingPDF: Bool = false
     
+    @AppStorage("isTextAssistEnabled") private var isTextAssistEnabled: Bool = false
+    
+    let summaryCharacterLimit: Int = 300
+    
     var body: some View {
         Form {
             Section(header: Text("Personal Information")) {
@@ -29,6 +27,7 @@ struct CVFormView: View {
             Section(header: Text("Summary")) {
                 TextField("A short summary of yourself", text: $cv.summary, axis: .vertical)
                     .accessibilityLabel("Add a short summary about yourself. Keep it simple and to the point.")
+                    .characterLimit($cv.summary, limit: summaryCharacterLimit, isTextAssistEnabled: isTextAssistEnabled)
             }
             
             Section {

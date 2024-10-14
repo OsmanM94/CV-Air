@@ -1,9 +1,3 @@
-//
-//  ProjectView.swift
-//  SimpleCV
-//
-//  Created by asia on 08.10.2024.
-//
 
 import SwiftUI
 
@@ -13,6 +7,13 @@ struct ProjectView: View {
     @State private var editingProjectId: UUID? = nil
     @State private var tempTitle: String = ""
     @State private var tempDetails: String = ""
+    
+    @AppStorage("isTextAssistEnabled") private var isTextAssistEnabled: Bool = false
+    
+    let characterLimits: [String: Int] = [
+        "title": 100,
+        "details": 500
+    ]
         
     var body: some View {
         List {
@@ -22,9 +23,11 @@ struct ProjectView: View {
                         TextField("Project Title", text: $tempTitle)
                             .autocorrectionDisabled()
                             .accessibilityLabel("Edit Project Title")
+                            .characterLimit($tempTitle, limit: characterLimits["title"] ?? 100, isTextAssistEnabled: isTextAssistEnabled)
                         
                         TextField("Project Details", text: $tempDetails, axis: .vertical)
                             .accessibilityLabel("Edit Project Details")
+                            .characterLimit($tempDetails, limit: characterLimits["details"] ?? 500, isTextAssistEnabled: isTextAssistEnabled)
                         
                         SaveCancelButtons {
                             saveEdits(for: project)
@@ -76,6 +79,10 @@ struct ProjectView: View {
         .listRowSeparator(.hidden, edges: .bottom)
         .alignmentGuide(.leading, computeValue: {_ in 0 })
         .accessibilityLabel("New Project Title")
+        .characterLimit(Binding(
+            get: { newProject.title },
+            set: { newProject.title = $0 }
+        ), limit: characterLimits["title"] ?? 100, isTextAssistEnabled: isTextAssistEnabled)
         
         TextEditor(text: Binding(
             get: { newProject.details },
@@ -85,6 +92,10 @@ struct ProjectView: View {
         .background(Color(.black).opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .accessibilityLabel("New Project Details")
+        .characterLimit(Binding(
+            get: { newProject.details },
+            set: { newProject.details = $0 }
+        ), limit: characterLimits["details"] ?? 500, isTextAssistEnabled: isTextAssistEnabled)
         
         Button(action: addNewProject) {
             HStack {
