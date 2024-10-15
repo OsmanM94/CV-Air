@@ -112,7 +112,7 @@ struct CVPreview: View {
                 // Summary
                 if !cv.summary.isEmpty {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("Profile")
+                        Text("Summary")
                             .font(.system(size: 16, weight: .bold))
                         Text(cv.summary)
                             .font(.system(size: 12))
