@@ -14,3 +14,4 @@ struct PersonalInfo: Codable {
     var email: String
     var website: String?
 }
+

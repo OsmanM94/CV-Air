@@ -1,9 +1,4 @@
-//
-//  CV.swift
-//  SimpleCV
-//
-//  Created by asia on 08.10.2024.
-//
+
 
 import Foundation
 import SwiftData

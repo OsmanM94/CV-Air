@@ -21,7 +21,6 @@ struct SettingsView: View {
                 .accessibilityLabel("Receive feedback on text length to optimize your CV for ATS systems")
             }
             .navigationTitle("Settings")
-            .padding(.top)
         }
     }
 }

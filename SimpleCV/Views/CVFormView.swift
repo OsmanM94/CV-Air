@@ -40,7 +40,7 @@ struct CVFormView: View {
                         addButtonTitle: "Add Experience"
                     )
                 } label: {
-                    Text("Professional history")
+                    Text("Professional History")
                         .foregroundStyle(.blue)
                 }
             }
@@ -55,7 +55,7 @@ struct CVFormView: View {
                         addButtonTitle: "Add Education"
                     )
                 } label: {
-                    Text("Educational history")
+                    Text("Educational History")
                         .foregroundStyle(.blue)
                 }
             }
