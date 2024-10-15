@@ -14,10 +14,6 @@
 		6257326D2CBC8A37006B3E1E /* Exceptions for "SimpleCV" folder in "SimpleCV" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"Components/preview1/1 MarketingView.png",
-				"Components/preview1/2 MarketingView.png",
-				"Components/preview2/1 MarketingView.png",
-				"Components/preview2/2 MarketingView.png",
 				Info.plist,
 			);
 			target = 6259A17F2CB52ECF00B73F2D /* SimpleCV */;

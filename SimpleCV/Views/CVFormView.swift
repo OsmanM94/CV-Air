@@ -15,11 +15,21 @@ struct CVFormView: View {
     @State private var isGeneratingPDF: Bool = false
     
     @AppStorage("isTextAssistEnabled") private var isTextAssistEnabled: Bool = false
+    @State private var selectedTemplate: CVTemplateType = .original
     
     let summaryCharacterLimit: Int = 300
     
     var body: some View {
         Form {
+            Section(header: Text("Template")) {
+                Picker("Select Template", selection: $selectedTemplate) {
+                    ForEach(CVTemplateType.allCases, id: \.id) { template in
+                        Text(template.rawValue).tag(template)
+                    }
+                }
+                .pickerStyle(.menu)
+            }
+            
             Section(header: Text("Personal Information")) {
                 PersonalInfoView(personalInfo: $cv.personalInfo)
             }
@@ -75,7 +85,7 @@ struct CVFormView: View {
             
             Section {
                 NavigationLink("Preview") {
-                    CVPreview(cv: cv)
+                    CVPreview(cv: cv, templateType: selectedTemplate)
                 }
                 
                 if let onSave = onSave {
@@ -140,7 +150,7 @@ struct CVFormView: View {
         isGeneratingPDF = true
         
         Task {
-            let pdfData = await CVPDFGenerator.generatePDF(for: cv)
+            let pdfData = await generatePDF(for: cv, using: selectedTemplate)
             await MainActor.run {
                 cv.pdfData = pdfData
                 isGeneratingPDF = false

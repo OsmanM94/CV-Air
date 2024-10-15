@@ -18,15 +18,17 @@ struct ContentView: View {
         skills: []
     )
     
+    @State private var selectedTemplate: CVTemplateType = .original
+    
     var body: some View {
         NavigationStack {
             CVFormView(cv: cv, onSave: saveCV, isNewCV: true)
                 .navigationTitle("Create")
         }
     }
-    
+        
     private func saveCV() async {
-        cv.pdfData = await CVPDFGenerator.generatePDF(for: cv)
+        cv.pdfData = await generatePDF(for: cv, using: selectedTemplate)
         modelContext.insert(cv)
         
         do {
@@ -52,6 +54,7 @@ struct ContentView: View {
             projects: [],
             skills: []
         )
+        selectedTemplate = .original
     }
 }
 
