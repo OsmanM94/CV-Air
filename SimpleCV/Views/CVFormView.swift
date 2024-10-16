@@ -119,7 +119,7 @@ struct CVFormView: View {
                 .disabled(isGeneratingPDF)
                 
             } label: {
-                Image(systemName: "ellipsis.circle")
+                Image(systemName: "ellipsis.circle.fill")
             }
         }
         .toolbar {

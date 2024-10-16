@@ -101,7 +101,7 @@ struct HistoryView: View {
             .accessibilityLabel("End Year")
         }
         
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 25) {
             ForEach(newEntry.details.indices, id: \.self) { index in
                 HStack {
                     Text(newEntry.details[index])

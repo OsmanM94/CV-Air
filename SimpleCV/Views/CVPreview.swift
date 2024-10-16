@@ -13,6 +13,12 @@ struct CVPreview: View {
     
     var body: some View {
         ScrollView {
+            Text("Tip: For accurate preview use Export Data")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fontWeight(.semibold)
+                .fontDesign(.rounded)
+            
             VStack(alignment: .leading, spacing: 20) {
                 switch templateType {
                 case .original:
