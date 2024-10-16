@@ -19,6 +19,8 @@ struct ContentView: View {
     )
     
     @State private var selectedTemplate: CVTemplateType = .original
+    @State private var selectedFontSize: CVFontSize = .medium
+    @State private var selectedSpacing: CVSpacing = .normal
     
     var body: some View {
         NavigationStack {
@@ -28,7 +30,12 @@ struct ContentView: View {
     }
         
     private func saveCV() async {
-        cv.pdfData = await generatePDF(for: cv, using: selectedTemplate)
+        cv.pdfData = await generatePDF(
+            for: cv,
+            using: selectedTemplate,
+            fontSize: selectedFontSize,
+            spacing: selectedSpacing
+        )
         modelContext.insert(cv)
         
         do {

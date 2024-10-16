@@ -16,6 +16,8 @@ struct CVFormView: View {
     
     @AppStorage("isTextAssistEnabled") private var isTextAssistEnabled: Bool = false
     @State private var selectedTemplate: CVTemplateType = .original
+    @State private var selectedFontSize: CVFontSize = .medium
+    @State private var selectedSpacing: CVSpacing = .normal
     
     let summaryCharacterLimit: Int = 300
     
@@ -29,6 +31,26 @@ struct CVFormView: View {
                 }
                 .pickerStyle(.menu)
             }
+            
+            Section(header: Text("Font Size")) {
+                Picker("Select Font Size", selection: $selectedFontSize) {
+                    Text("Small").tag(CVFontSize.small)
+                    Text("Medium").tag(CVFontSize.medium)
+                    Text("Large").tag(CVFontSize.large)
+                }
+                .pickerStyle(.segmented)
+            }
+            .listRowBackground(Color.clear)
+            
+            Section(header: Text("Spacing")) {
+                Picker("Select Spacing", selection: $selectedSpacing) {
+                    Text("Compact").tag(CVSpacing.compact)
+                    Text("Normal").tag(CVSpacing.normal)
+                    Text("Relaxed").tag(CVSpacing.relaxed)
+                }
+                .pickerStyle(.segmented)
+            }
+            .listRowBackground(Color.clear)
             
             Section(header: Text("Personal Information")) {
                 PersonalInfoView(personalInfo: $cv.personalInfo)
@@ -85,7 +107,7 @@ struct CVFormView: View {
             
             Section {
                 NavigationLink("Preview") {
-                    CVPreview(cv: cv, templateType: selectedTemplate)
+                    CVPreview(cv: cv, templateType: selectedTemplate, fontSize: selectedFontSize, spacing: selectedSpacing)
                 }
                 
                 if let onSave = onSave {
@@ -150,7 +172,7 @@ struct CVFormView: View {
         isGeneratingPDF = true
         
         Task {
-            let pdfData = await generatePDF(for: cv, using: selectedTemplate)
+            let pdfData = await generatePDF(for: cv, using: selectedTemplate, fontSize: selectedFontSize, spacing: selectedSpacing)
             await MainActor.run {
                 cv.pdfData = pdfData
                 isGeneratingPDF = false
