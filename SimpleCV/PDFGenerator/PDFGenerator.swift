@@ -53,8 +53,11 @@ struct OriginalTemplate: CVTemplate {
         let format = UIGraphicsPDFRendererFormat()
         format.documentInfo = pdfMetaData as [String: Any]
         
-        let pageWidth = 8.5 * 72.0
-        let pageHeight = 11 * 72.0
+//        let pageWidth = 8.5 * 72.0
+//        let pageHeight = 11 * 72.0
+//        let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
+        let pageWidth = 595.0  // 210 mm in points (72 points per inch)
+        let pageHeight = 842.0 // 297 mm in points (72 points per inch)
         let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
         
         return UIGraphicsPDFRenderer(bounds: pageRect, format: format)
@@ -88,7 +91,7 @@ struct OriginalTemplate: CVTemplate {
         yPosition += 20
         
         if let website = info.website, !website.isEmpty {
-            let websiteString = "Website: \(website)"
+            let websiteString = "\(website)"
             let websiteAttributed = NSAttributedString(string: websiteString, attributes: attributes)
             let websiteRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: 20)
             websiteAttributed.draw(in: websiteRect)
@@ -209,92 +212,52 @@ struct OriginalTemplate: CVTemplate {
     }
     
     private static func addProjects(title: String, projects: [Project], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
-        let titleFont = UIFont.systemFont(ofSize: 16.0, weight: .bold)
-        let projectTitleFont = UIFont.systemFont(ofSize: 14.0, weight: .semibold)
-        let detailsFont = UIFont.systemFont(ofSize: 12.0, weight: .regular)
+        let titleFont = UIFont.systemFont(ofSize: 16, weight: .bold)
+        let projectTitleFont = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        let detailsFont = UIFont.systemFont(ofSize: 12, weight: .regular)
         
-        let titleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: titleFont]
-        let projectTitleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: projectTitleFont]
-        let detailsAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: detailsFont]
+        let titleAttributes: [NSAttributedString.Key: Any] = [.font: titleFont]
+        let projectTitleAttributes: [NSAttributedString.Key: Any] = [.font: projectTitleFont]
+        let detailsAttributes: [NSAttributedString.Key: Any] = [.font: detailsFont]
         
-        let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
-        let titleSize = attributedTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+        let titleString = NSAttributedString(string: title, attributes: titleAttributes)
+        let titleSize = titleString.size()
         
         var currentY = yOffset
         
         // Check if there's enough space for the title and at least one project
-        if currentY + titleSize.height + 75 > pageRect.height - 72 { // 75 is an estimate for minimum project height
+        if currentY + titleSize.height + 50 > pageRect.height - 72 {
             context.beginPage()
             currentY = 36
         }
         
-        let titleRect = CGRect(x: 36, y: currentY, width: pageRect.width - 72, height: titleSize.height)
-        attributedTitle.draw(in: titleRect)
-        currentY += titleSize.height + 10
+        titleString.draw(at: CGPoint(x: 36, y: currentY))
+        currentY += titleSize.height + 15
         
         for project in projects {
             let projectTitleString = NSAttributedString(string: project.title, attributes: projectTitleAttributes)
             let detailsString = NSAttributedString(string: project.details, attributes: detailsAttributes)
             
-            let projectTitleSize = projectTitleString.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+            let projectTitleSize = projectTitleString.size()
             let detailsRect = detailsString.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
             
-            let totalProjectHeight = projectTitleSize.height + detailsRect.height + 25 // 25 for padding
+            let totalProjectHeight = projectTitleSize.height + detailsRect.height + 20 // 20 for padding
             
+            // Check if there's enough space for the entire project
             if currentY + totalProjectHeight > pageRect.height - 72 {
                 context.beginPage()
                 currentY = 36
             }
             
-            projectTitleString.draw(in: CGRect(x: 36, y: currentY, width: pageRect.width - 72, height: projectTitleSize.height))
+            projectTitleString.draw(at: CGPoint(x: 36, y: currentY))
             currentY += projectTitleSize.height + 5
             
             detailsString.draw(in: CGRect(x: 36, y: currentY, width: pageRect.width - 72, height: detailsRect.height))
-            currentY += detailsRect.height + 20
+            currentY += detailsRect.height + 15
         }
         
         return currentY
     }
-    
-//    private static func addProjects(title: String, projects: [Project], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
-//        let titleFont = UIFont.systemFont(ofSize: 14, weight: .bold)
-//        let projectTitleFont = UIFont.systemFont(ofSize: 12, weight: .semibold)
-//        let detailsFont = UIFont.systemFont(ofSize: 12, weight: .regular)
-//        
-//        let titleAttributes: [NSAttributedString.Key: Any] = [.font: titleFont]
-//        let projectTitleAttributes: [NSAttributedString.Key: Any] = [.font: projectTitleFont]
-//        let detailsAttributes: [NSAttributedString.Key: Any] = [.font: detailsFont]
-//        
-//        let titleString = NSAttributedString(string: title, attributes: titleAttributes)
-//        titleString.draw(at: CGPoint(x: 36, y: yOffset))
-//        
-//        var currentY = yOffset + 25
-//        
-//        for project in projects {
-//            let projectTitleString = NSAttributedString(string: project.title, attributes: projectTitleAttributes)
-//            let detailsString = NSAttributedString(string: project.details, attributes: detailsAttributes)
-//            
-//            if currentY + 50 > pageRect.height - 72 {
-//                context.beginPage()
-//                currentY = 36
-//            }
-//            
-//            projectTitleString.draw(at: CGPoint(x: 36, y: currentY))
-//            currentY += 20
-//            
-//            let detailsRect = detailsString.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-//            
-//            if currentY + detailsRect.height > pageRect.height - 72 {
-//                context.beginPage()
-//                currentY = 36
-//            }
-//            
-//            detailsString.draw(in: CGRect(x: 36, y: currentY, width: pageRect.width - 72, height: detailsRect.height))
-//            currentY += detailsRect.height + 15
-//        }
-//        
-//        return currentY
-//    }
 }
 
 struct ModernMinimalistTemplate: CVTemplate {
@@ -767,7 +730,7 @@ struct ClassicProfessionalTemplate: CVTemplate {
     
     private static func addProjects(title: String, projects: [Project], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext) -> CGFloat {
         let titleFont = UIFont.systemFont(ofSize: 14, weight: .bold)
-        let projectTitleFont = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        let projectTitleFont = UIFont.systemFont(ofSize: 14, weight: .semibold)
         let detailsFont = UIFont.systemFont(ofSize: 12, weight: .regular)
         
         let titleAttributes: [NSAttributedString.Key: Any] = [.font: titleFont]
@@ -775,28 +738,36 @@ struct ClassicProfessionalTemplate: CVTemplate {
         let detailsAttributes: [NSAttributedString.Key: Any] = [.font: detailsFont]
         
         let titleString = NSAttributedString(string: title, attributes: titleAttributes)
-        titleString.draw(at: CGPoint(x: 36, y: yOffset))
+        let titleSize = titleString.size()
         
-        var currentY = yOffset + 25
+        var currentY = yOffset
+        
+        // Check if there's enough space for the title and at least one project
+        if currentY + titleSize.height + 50 > pageRect.height - 72 {
+            context.beginPage()
+            currentY = 36
+        }
+        
+        titleString.draw(at: CGPoint(x: 36, y: currentY))
+        currentY += titleSize.height + 15
         
         for project in projects {
             let projectTitleString = NSAttributedString(string: project.title, attributes: projectTitleAttributes)
             let detailsString = NSAttributedString(string: project.details, attributes: detailsAttributes)
             
-            if currentY + 50 > pageRect.height - 72 {
+            let projectTitleSize = projectTitleString.size()
+            let detailsRect = detailsString.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+            
+            let totalProjectHeight = projectTitleSize.height + detailsRect.height + 20 // 20 for padding
+            
+            // Check if there's enough space for the entire project
+            if currentY + totalProjectHeight > pageRect.height - 72 {
                 context.beginPage()
                 currentY = 36
             }
             
             projectTitleString.draw(at: CGPoint(x: 36, y: currentY))
-            currentY += 20
-            
-            let detailsRect = detailsString.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-            
-            if currentY + detailsRect.height > pageRect.height - 72 {
-                context.beginPage()
-                currentY = 36
-            }
+            currentY += projectTitleSize.height + 5
             
             detailsString.draw(in: CGRect(x: 36, y: currentY, width: pageRect.width - 72, height: detailsRect.height))
             currentY += detailsRect.height + 15

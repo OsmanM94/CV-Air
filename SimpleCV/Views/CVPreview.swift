@@ -285,8 +285,12 @@ struct CVPreview: View {
         VStack(alignment: .leading, spacing: 5) {
             Text("Skills")
                 .font(.system(size: 16, weight: .bold))
-            Text(cv.skills.joined(separator: " • "))
-                .font(.system(size: 12))
+            ForEach(cv.skills, id: \.self) { skill in
+                HStack {
+                    Text("• \(skill)")
+                        .font(.system(size: 12))
+                }
+            }
         }
     }
 }
