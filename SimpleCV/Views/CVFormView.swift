@@ -12,7 +12,6 @@ struct CVFormView: View {
     @State private var saveSuccess: Bool = false
     
     @State private var showingShareSheet: Bool = false
-    @State private var isGeneratingPDF: Bool = false
     
     @AppStorage("isTextAssistEnabled") private var isTextAssistEnabled: Bool = false
     @State private var selectedTemplate: CVTemplateType = .original
@@ -31,27 +30,32 @@ struct CVFormView: View {
                 }
                 .pickerStyle(.menu)
             }
+            .accessibilityLabel("Select simple templates")
             
-            Section(header: Text("Font Size")) {
-                Picker("Select Font Size", selection: $selectedFontSize) {
-                    Text("Small").tag(CVFontSize.small)
-                    Text("Medium").tag(CVFontSize.medium)
-                    Text("Large").tag(CVFontSize.large)
+            DisclosureGroup("Adjustments") {
+                Section(header: Text("Font Size")) {
+                    Picker("Select Font Size", selection: $selectedFontSize) {
+                        Text("Small").tag(CVFontSize.small)
+                        Text("Medium").tag(CVFontSize.medium)
+                        Text("Large").tag(CVFontSize.large)
+                    }
+                    .pickerStyle(.segmented)
                 }
-                .pickerStyle(.segmented)
-            }
-            .listRowBackground(Color.clear)
-            
-            Section(header: Text("Spacing")) {
-                Picker("Select Spacing", selection: $selectedSpacing) {
-                    Text("Compact").tag(CVSpacing.compact)
-                    Text("Normal").tag(CVSpacing.normal)
-                    Text("Relaxed").tag(CVSpacing.relaxed)
+                .listRowBackground(Color.clear)
+                .accessibilityLabel("Adjust font size. The smaller, the more you can fit in A4")
+                
+                Section(header: Text("Spacing")) {
+                    Picker("Select Spacing", selection: $selectedSpacing) {
+                        Text("Compact").tag(CVSpacing.compact)
+                        Text("Normal").tag(CVSpacing.normal)
+                        Text("Relaxed").tag(CVSpacing.relaxed)
+                    }
+                    .pickerStyle(.segmented)
                 }
-                .pickerStyle(.segmented)
+                .listRowBackground(Color.clear)
+                .accessibilityLabel("Adjust spacing between the sections")
             }
-            .listRowBackground(Color.clear)
-            
+        
             Section(header: Text("Personal Information")) {
                 PersonalInfoView(personalInfo: $cv.personalInfo)
             }
@@ -138,8 +142,6 @@ struct CVFormView: View {
                 }) {
                     Label("Export PDF", systemImage: "square.and.arrow.up")
                 }
-                .disabled(isGeneratingPDF)
-                
             } label: {
                 Image(systemName: "ellipsis.circle.fill")
             }
@@ -169,13 +171,10 @@ struct CVFormView: View {
     }
     
     private func generateAndExportPDF() {
-        isGeneratingPDF = true
-        
         Task {
             let pdfData = await generatePDF(for: cv, using: selectedTemplate, fontSize: selectedFontSize, spacing: selectedSpacing)
             await MainActor.run {
                 cv.pdfData = pdfData
-                isGeneratingPDF = false
                 showingShareSheet = true
             }
         }

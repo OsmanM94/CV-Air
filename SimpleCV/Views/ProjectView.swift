@@ -103,9 +103,11 @@ struct ProjectView: View {
                 Text("Add Project")
             }
             .foregroundStyle(.blue)
-            .frame(maxWidth: .infinity)
-            .padding()
         }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+        .frame(maxWidth: .infinity)
+        .padding(.top)
         .disabled((newProject.title).isEmpty && (newProject.details).isEmpty)
         .listRowSeparator(.hidden)
         .accessibilityLabel("Add New Project")

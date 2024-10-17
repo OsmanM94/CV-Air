@@ -147,11 +147,15 @@ struct HistoryView: View {
                 showingError = false
             }
         }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+        .disabled(!validateNewEntry())
+        .padding(.top)
         .foregroundStyle(.blue)
         .accessibilityLabel(addButtonTitle)
     }
     
-    // MARK: - MainView
+    // MARK: - Display View
     
     private func displayView(for entry: HistoryEntry) -> some View {
         VStack(alignment: .leading, spacing: 8) {
