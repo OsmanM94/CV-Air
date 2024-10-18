@@ -15,8 +15,8 @@ struct SettingsView: View {
                 
                 Section("Text length feedback") {
                     Toggle("Get feedback", systemImage: "text.badge.checkmark", isOn: $isTextAssistEnabled)
-                        .popoverTip(TextAssistTip(), arrowEdge: .bottom)
                 }
+                .popoverTip(TextAssistTip())
                 .accessibilityLabel("Receive feedback on text length to optimize your CV for ATS systems")
                 
                 Section("Feedback & Support") {

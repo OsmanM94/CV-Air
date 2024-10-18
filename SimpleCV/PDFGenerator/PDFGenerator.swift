@@ -257,11 +257,22 @@ struct OriginalTemplate: CVTemplate {
             
             var currentY = yOffset
             
-            if currentY + titleSize.height + 50 > pageRect.height - 72 {
+            // Calculate space needed for section title and at least the first project
+            let firstProjectTitleString = NSAttributedString(string: projects.first?.title ?? "", attributes: projectTitleAttributes)
+            let firstProjectDetailsString = NSAttributedString(string: projects.first?.details ?? "", attributes: detailsAttributes)
+            
+            let firstProjectTitleSize = firstProjectTitleString.size()
+            let firstProjectDetailsRect = firstProjectDetailsString.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+            
+            let minRequiredSpace = titleSize.height + firstProjectTitleSize.height + firstProjectDetailsRect.height + (40 * spacing.scaleFactor)
+            
+            // If there's not enough space for the section title and at least the first project, start a new page
+            if currentY + minRequiredSpace > pageRect.height - 72 {
                 context.beginPage()
                 currentY = 36
             }
             
+            // Now we're sure we have enough space, draw the section title
             titleString.draw(at: CGPoint(x: 36, y: currentY))
             currentY += titleSize.height + (15 * spacing.scaleFactor)
             
@@ -274,11 +285,13 @@ struct OriginalTemplate: CVTemplate {
                 
                 let totalProjectHeight = projectTitleSize.height + detailsRect.height + (20 * spacing.scaleFactor)
                 
+                // Check if there's enough space for both title and details
                 if currentY + totalProjectHeight > pageRect.height - 72 {
                     context.beginPage()
                     currentY = 36
                 }
                 
+                // Now we're sure we have enough space, draw both title and details
                 projectTitleString.draw(at: CGPoint(x: 36, y: currentY))
                 currentY += projectTitleSize.height + (5 * spacing.scaleFactor)
                 
@@ -700,9 +713,36 @@ struct ClassicProfessionalTemplate: CVTemplate {
            let detailsAttributes: [NSAttributedString.Key: Any] = [.font: detailsFont]
            
            let titleString = NSAttributedString(string: title, attributes: titleAttributes)
-           titleString.draw(at: CGPoint(x: 36, y: yOffset))
+           let titleSize = titleString.size()
            
-           var currentY = yOffset + 25 * spacing.scaleFactor
+           var currentY = yOffset
+           
+           // Calculate space needed for section title and at least the first entry
+           if let firstEntry = history.first {
+               let entryTitleText = "\(firstEntry.title), \(firstEntry.subtitle)"
+               let dateText = formatYearRange(start: firstEntry.startYear, end: firstEntry.endYear)
+               
+               let entryTitleString = NSAttributedString(string: entryTitleText, attributes: entryTitleAttributes)
+               let dateString = NSAttributedString(string: dateText, attributes: detailsAttributes)
+               
+               let entryTitleSize = entryTitleString.size()
+               _ = dateString.size()
+               
+               let firstDetailString = NSAttributedString(string: "• \(firstEntry.details.first ?? "")", attributes: detailsAttributes)
+               let firstDetailRect = firstDetailString.boundingRect(with: CGSize(width: pageRect.width - 82, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+               
+               let minRequiredSpace = titleSize.height + 25 * spacing.scaleFactor + entryTitleSize.height + 20 * spacing.scaleFactor + firstDetailRect.height + 20 * spacing.scaleFactor
+               
+               // If there's not enough space for the section title and at least the first entry, start a new page
+               if currentY + minRequiredSpace > pageRect.height - 72 {
+                   context.beginPage()
+                   currentY = 36
+               }
+           }
+           
+           // Now we're sure we have enough space, draw the section title
+           titleString.draw(at: CGPoint(x: 36, y: currentY))
+           currentY += titleSize.height + 25 * spacing.scaleFactor
            
            for entry in history {
                let entryTitleText = "\(entry.title), \(entry.subtitle)"
@@ -711,21 +751,23 @@ struct ClassicProfessionalTemplate: CVTemplate {
                let entryTitleString = NSAttributedString(string: entryTitleText, attributes: entryTitleAttributes)
                let dateString = NSAttributedString(string: dateText, attributes: detailsAttributes)
                
-               if currentY + 50 > pageRect.height - 72 {
+               let entryTitleSize = entryTitleString.size()
+               let dateSize = dateString.size()
+               
+               // Check if there's enough space for the entry title and date
+               if currentY + entryTitleSize.height + 20 * spacing.scaleFactor > pageRect.height - 72 {
                    context.beginPage()
                    currentY = 36
                }
                
                entryTitleString.draw(at: CGPoint(x: 36, y: currentY))
-               
-               let dateSize = dateString.size()
                dateString.draw(at: CGPoint(x: pageRect.width - 36 - dateSize.width, y: currentY))
                
-               currentY += 20 * spacing.scaleFactor
+               currentY += entryTitleSize.height + 20 * spacing.scaleFactor
                
                for detail in entry.details {
                    let detailString = NSAttributedString(string: "• \(detail)", attributes: detailsAttributes)
-                   let detailRect = detailString.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+                   let detailRect = detailString.boundingRect(with: CGSize(width: pageRect.width - 82, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
                    
                    if currentY + detailRect.height > pageRect.height - 72 {
                        context.beginPage()
@@ -934,43 +976,185 @@ struct CompactEfficientTemplate: CVTemplate {
             return currentY
         }
         
-        private static func addProjects(_ projects: [Project], pageRect: CGRect, yOffset: CGFloat, width: CGFloat, xOffset: CGFloat, context: UIGraphicsPDFRendererContext, fontSize: CVFontSize, spacing: CVSpacing) -> CGFloat {
-            let titleFont = UIFont.systemFont(ofSize: 12 * fontSize.scaleFactor, weight: .bold)
-            let projectTitleFont = UIFont.systemFont(ofSize: 11 * fontSize.scaleFactor, weight: .semibold)
-            let detailsFont = UIFont.systemFont(ofSize: 10 * fontSize.scaleFactor, weight: .regular)
-            
-            let titleAttributes: [NSAttributedString.Key: Any] = [.font: titleFont]
-            let projectTitleAttributes: [NSAttributedString.Key: Any] = [.font: projectTitleFont]
-            let detailsAttributes: [NSAttributedString.Key: Any] = [.font: detailsFont]
-            
-            let titleString = NSAttributedString(string: "Projects", attributes: titleAttributes)
-            titleString.draw(at: CGPoint(x: xOffset, y: yOffset))
-            
-            var currentY = yOffset + (15 * spacing.scaleFactor)
-            
-            for project in projects {
-                let projectTitleString = NSAttributedString(string: project.title, attributes: projectTitleAttributes)
-                let detailsString = NSAttributedString(string: project.details, attributes: detailsAttributes)
+    private static func addProjects(_ projects: [Project], pageRect: CGRect, yOffset: CGFloat, width: CGFloat, xOffset: CGFloat, context: UIGraphicsPDFRendererContext, fontSize: CVFontSize, spacing: CVSpacing) -> CGFloat {
+           let titleFont = UIFont.systemFont(ofSize: 12 * fontSize.scaleFactor, weight: .bold)
+           let projectTitleFont = UIFont.systemFont(ofSize: 11 * fontSize.scaleFactor, weight: .semibold)
+           let detailsFont = UIFont.systemFont(ofSize: 10 * fontSize.scaleFactor, weight: .regular)
+           
+           let titleAttributes: [NSAttributedString.Key: Any] = [.font: titleFont]
+           let projectTitleAttributes: [NSAttributedString.Key: Any] = [.font: projectTitleFont]
+           let detailsAttributes: [NSAttributedString.Key: Any] = [.font: detailsFont]
+           
+           let titleString = NSAttributedString(string: "Projects", attributes: titleAttributes)
+           let titleSize = titleString.size()
+           
+           var currentY = yOffset
+           
+           // Calculate space needed for "Projects" title and at least the first project
+           if let firstProject = projects.first {
+               let firstProjectTitleString = NSAttributedString(string: firstProject.title, attributes: projectTitleAttributes)
+               let firstProjectDetailsString = NSAttributedString(string: firstProject.details, attributes: detailsAttributes)
+               
+               let firstProjectTitleSize = firstProjectTitleString.size()
+               let firstProjectDetailsRect = firstProjectDetailsString.boundingRect(with: CGSize(width: width - 10, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+               
+               let minRequiredSpace = titleSize.height + firstProjectTitleSize.height + firstProjectDetailsRect.height + (35 * spacing.scaleFactor)
+               
+               // If there's not enough space for the "Projects" title and at least the first project, start a new page
+               if currentY + minRequiredSpace > pageRect.height - 72 {
+                   context.beginPage()
+                   currentY = 36
+               }
+           }
+           
+           // Now we're sure we have enough space, draw the "Projects" title
+           titleString.draw(at: CGPoint(x: xOffset, y: currentY))
+           currentY += titleSize.height + (15 * spacing.scaleFactor)
+           
+           for project in projects {
+               let projectTitleString = NSAttributedString(string: project.title, attributes: projectTitleAttributes)
+               let detailsString = NSAttributedString(string: project.details, attributes: detailsAttributes)
+               
+               let projectTitleSize = projectTitleString.size()
+               let detailsRect = detailsString.boundingRect(with: CGSize(width: width - 10, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+               
+               let totalProjectHeight = projectTitleSize.height + detailsRect.height + (20 * spacing.scaleFactor)
+               
+               // Check if there's enough space for both title and details
+               if currentY + totalProjectHeight > pageRect.height - 72 {
+                   context.beginPage()
+                   currentY = 36
+               }
+               
+               // Now we're sure we have enough space, draw both title and details
+               projectTitleString.draw(at: CGPoint(x: xOffset, y: currentY))
+               currentY += projectTitleSize.height + (5 * spacing.scaleFactor)
+               
+               detailsString.draw(in: CGRect(x: xOffset, y: currentY, width: width - 10, height: detailsRect.height))
+               currentY += detailsRect.height + (15 * spacing.scaleFactor)
+           }
+           
+           return currentY
+       }
+}
+
+struct CustomSectionsTemplate {
+    static func generatePDF(for cv: CustomCV, fontSize: CVFontSize, spacing: CVSpacing) async -> Data {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let renderer = createPDFRenderer(for: cv)
                 
-                if currentY + 30 > pageRect.height - 72 {
+                let data = renderer.pdfData { context in
+                    var currentYOffset: CGFloat = 0
+                    
                     context.beginPage()
-                    currentY = 36
+                    
+                    currentYOffset = addTitle(cv.personalInfo.name, pageRect: context.pdfContextBounds, fontSize: fontSize)
+                    currentYOffset = addPersonalInfo(cv.personalInfo, pageRect: context.pdfContextBounds, yOffset: currentYOffset, fontSize: fontSize, spacing: spacing)
+                    
+                    if !cv.summary.isEmpty {
+                        currentYOffset = addSection(title: "Summary", content: [cv.summary], pageRect: context.pdfContextBounds, yOffset: currentYOffset, context: context, fontSize: fontSize, spacing: spacing)
+                    }
+                    
+                    for section in cv.customSections {
+                        currentYOffset = addSection(title: section.title, content: section.content, pageRect: context.pdfContextBounds, yOffset: currentYOffset, context: context, fontSize: fontSize, spacing: spacing)
+                    }
                 }
                 
-                projectTitleString.draw(at: CGPoint(x: xOffset, y: currentY))
-                currentY += 15 * spacing.scaleFactor
-                
-                let detailsRect = detailsString.boundingRect(with: CGSize(width: width - 10, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
-                
-                if currentY + detailsRect.height > pageRect.height - 72 {
-                    context.beginPage()
-                    currentY = 36
-                }
-                
-                detailsString.draw(in: CGRect(x: xOffset, y: currentY, width: width - 10, height: detailsRect.height))
-                currentY += detailsRect.height + (5 * spacing.scaleFactor)
+                continuation.resume(returning: data)
+            }
+        }
+    }
+    
+    private static func createPDFRenderer(for cv: CustomCV) -> UIGraphicsPDFRenderer {
+        let pdfMetaData = [
+            kCGPDFContextCreator: "CV Maker App",
+            kCGPDFContextAuthor: cv.personalInfo.name
+        ]
+        let format = UIGraphicsPDFRendererFormat()
+        format.documentInfo = pdfMetaData as [String: Any]
+        
+        let pageWidth = 595.0  // A4 width in points
+        let pageHeight = 842.0 // A4 height in points
+        let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
+        
+        return UIGraphicsPDFRenderer(bounds: pageRect, format: format)
+    }
+    
+    private static func addTitle(_ title: String, pageRect: CGRect, fontSize: CVFontSize) -> CGFloat {
+        let titleFont = UIFont.systemFont(ofSize: 24.0 * fontSize.scaleFactor, weight: .bold)
+        let titleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: titleFont]
+        let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
+        let titleStringSize = attributedTitle.size()
+        let titleStringRect = CGRect(x: 36, y: 36, width: pageRect.width - 72, height: titleStringSize.height)
+        attributedTitle.draw(in: titleStringRect)
+        return titleStringRect.origin.y + titleStringSize.height + 10
+    }
+    
+    private static func addPersonalInfo(_ info: PersonalInfo, pageRect: CGRect, yOffset: CGFloat, fontSize: CVFontSize, spacing: CVSpacing) -> CGFloat {
+        let font = UIFont.systemFont(ofSize: 12.0 * fontSize.scaleFactor, weight: .regular)
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: font]
+        var yPosition = yOffset
+        
+        let firstLineString = "\(info.address) • \(info.phoneNumber)"
+        let firstLineAttributed = NSAttributedString(string: firstLineString, attributes: attributes)
+        let firstLineRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: 20)
+        firstLineAttributed.draw(in: firstLineRect)
+        yPosition += 20 * spacing.scaleFactor
+        
+        let emailString = "\(info.email)"
+        let emailAttributed = NSAttributedString(string: emailString, attributes: attributes)
+        let emailRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: 20)
+        emailAttributed.draw(in: emailRect)
+        yPosition += 20 * spacing.scaleFactor
+        
+        if let website = info.website, !website.isEmpty {
+            let websiteString = "Website: \(website)"
+            let websiteAttributed = NSAttributedString(string: websiteString, attributes: attributes)
+            let websiteRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: 20)
+            websiteAttributed.draw(in: websiteRect)
+            yPosition += 20 * spacing.scaleFactor
+        }
+        
+        return yPosition + (10 * spacing.scaleFactor)
+    }
+    
+    private static func addSection(title: String, content: [String], pageRect: CGRect, yOffset: CGFloat, context: UIGraphicsPDFRendererContext, fontSize: CVFontSize, spacing: CVSpacing) -> CGFloat {
+        let titleFont = UIFont.systemFont(ofSize: 16.0 * fontSize.scaleFactor, weight: .bold)
+        let contentFont = UIFont.systemFont(ofSize: 12.0 * fontSize.scaleFactor, weight: .regular)
+        
+        let titleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: titleFont]
+        let contentAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: contentFont]
+        
+        let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
+        let titleSize = attributedTitle.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+        
+        var yPosition = yOffset + (5 * spacing.scaleFactor)
+        
+        if yPosition + titleSize.height + 30 > pageRect.height - 72 {
+            context.beginPage()
+            yPosition = 36
+        }
+        
+        let titleRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: titleSize.height)
+        attributedTitle.draw(in: titleRect)
+        yPosition += titleSize.height + (10 * spacing.scaleFactor)
+        
+        for line in content {
+            let attributedContent = NSAttributedString(string: line, attributes: contentAttributes)
+            let contentSize = attributedContent.boundingRect(with: CGSize(width: pageRect.width - 72, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil)
+            
+            if yPosition + contentSize.height > pageRect.height - 72 {
+                context.beginPage()
+                yPosition = 36
             }
             
-            return currentY
+            let contentRect = CGRect(x: 36, y: yPosition, width: pageRect.width - 72, height: contentSize.height)
+            attributedContent.draw(in: contentRect)
+            yPosition += contentSize.height + (5 * spacing.scaleFactor)
         }
+        
+        return yPosition + (10 * spacing.scaleFactor)
+    }
 }
+

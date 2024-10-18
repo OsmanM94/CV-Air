@@ -9,6 +9,8 @@ struct StoreKitView: View {
         NavigationStack {
             VStack {
                 switch viewModel.productViewState {
+                case .empty:
+                    ContentUnavailableView("No products", systemImage: "tray.fill")
                 case .loading:
                     ProgressView()
                         .scaleEffect(1.2)
@@ -124,8 +126,10 @@ fileprivate struct ProductDetailView: View {
             Image(viewModel.imageNameForProduct(product))
                 .resizable()
                 .aspectRatio(contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                .shadow(color: .gray, radius: 1)
                 .containerRelativeFrame(.horizontal)
-                .ignoresSafeArea()
         }
     }
 

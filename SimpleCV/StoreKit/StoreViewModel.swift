@@ -10,6 +10,7 @@ enum PurchaseViewState: Equatable {
 }
 
 enum LoadingProductsViewState: Equatable {
+    case empty
     case loading
     case loaded
     case error(String)
@@ -95,7 +96,7 @@ final class StoreKitViewModel {
             self.products = sortProductsByCustomOrder(products)
             
             purchaseViewState = .ready
-            productViewState = .loaded
+            productViewState = products.isEmpty ? .empty : .loaded
         } catch {
             productViewState = .error(StoreError.unknownError.localizedDescription)
         }
