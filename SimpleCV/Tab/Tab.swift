@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Tab: View {
-    @State private var selectedTab: Int = 2
+    @State private var selectedTab: Int = 0
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -24,9 +24,9 @@ struct Tab: View {
                 }
                 .tag(1)
             
-            GuidanceView()
+            StoreKitView()
                 .tabItem {
-                    Label("Guidance", systemImage: "info.circle.fill")
+                    Label("Shop", systemImage: "cart.fill")
                 }
                 .tag(2)
             
@@ -41,4 +41,5 @@ struct Tab: View {
 
 #Preview {
     Tab()
+        .environment(StoreKitViewModel())
 }

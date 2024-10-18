@@ -7,18 +7,24 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Feedback & Support") {
-                    NavigationLink("Support") {
-                        SupportView()
+                Section("Guidance") {
+                    NavigationLink("See guidance") {
+                        GuidanceView()
                     }
                 }
-                .accessibilityLabel("Call support for any questions or issues")
                 
                 Section("Text length feedback") {
                     Toggle("Get feedback", systemImage: "text.badge.checkmark", isOn: $isTextAssistEnabled)
                         .popoverTip(TextAssistTip(), arrowEdge: .bottom)
                 }
                 .accessibilityLabel("Receive feedback on text length to optimize your CV for ATS systems")
+                
+                Section("Feedback & Support") {
+                    NavigationLink("Support") {
+                        SupportView()
+                    }
+                }
+                .accessibilityLabel("Call support for any questions or issues")
             }
             .navigationTitle("Settings")
         }

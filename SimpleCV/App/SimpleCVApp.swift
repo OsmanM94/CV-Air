@@ -11,6 +11,8 @@ import TipKit
 
 @main
 struct SimpleCVApp: App {
+    @State private var storeKitViewModel = StoreKitViewModel()
+    
     var body: some Scene {
         WindowGroup {
             Tab()
@@ -20,6 +22,7 @@ struct SimpleCVApp: App {
                         .datastoreLocation(.applicationDefault)
                     ])
                 }
+                .environment(storeKitViewModel)
         }
         .modelContainer(for: CV.self)
     }

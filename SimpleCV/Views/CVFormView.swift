@@ -20,19 +20,35 @@ struct CVFormView: View {
     
     let summaryCharacterLimit: Int = 300
     
+    @Environment(StoreKitViewModel.self) private var storeViewModel
+    
     var body: some View {
         Form {
             Section(header: Text("Template")) {
                 Picker("Select Template", selection: $selectedTemplate) {
                     ForEach(CVTemplateType.allCases, id: \.id) { template in
-                        Text(template.rawValue).tag(template)
+                        if template == .original || storeViewModel.unlockedFeatures[template.productId] == true {
+                            Text(template.rawValue).tag(template)
+                        } else {
+                            Label {
+                                Text(template.rawValue)
+                            } icon: {
+                                Image(systemName: "lock.fill")
+                            }
+                            .tag(template)
+                        }
                     }
                 }
                 .pickerStyle(.menu)
+                .onChange(of: selectedTemplate) { _, newValue in
+                    if newValue != .original && storeViewModel.unlockedFeatures[newValue.productId] != true {
+                        selectedTemplate = .original
+                    }
+                }
             }
-            .accessibilityLabel("Select simple templates")
+            .accessibilityLabel("Select templates")
             
-            DisclosureGroup("Adjustments") {
+            DisclosureGroup {
                 Section(header: Text("Font Size")) {
                     Picker("Select Font Size", selection: $selectedFontSize) {
                         Text("Small").tag(CVFontSize.small)
@@ -54,8 +70,18 @@ struct CVFormView: View {
                 }
                 .listRowBackground(Color.clear)
                 .accessibilityLabel("Adjust spacing between the sections")
+            } label: {
+                HStack {
+                    Text("Adjustments")
+                    Spacer()
+                    if storeViewModel.unlockedFeatures["adjustments"] != true {
+                        Image(systemName: "lock.fill")
+                            .foregroundStyle(.orange)
+                    }
+                }
             }
-        
+            .disabled(storeViewModel.unlockedFeatures["adjustments"] != true)
+
             Section(header: Text("Personal Information")) {
                 PersonalInfoView(personalInfo: $cv.personalInfo)
             }

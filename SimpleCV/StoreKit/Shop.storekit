@@ -1,0 +1,140 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "DD934987",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "6737122585",
+      "localizations" : [
+        {
+          "description" : "Font and spacing for templates",
+          "displayName" : "Adjustments",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "adjustments",
+      "referenceName" : "Adjustments",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "6737124941",
+      "localizations" : [
+        {
+          "description" : "Template",
+          "displayName" : "Modern Minimalist",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "template2",
+      "referenceName" : "template2",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "6737125108",
+      "localizations" : [
+        {
+          "description" : "Template",
+          "displayName" : "Classic Professional",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "template3",
+      "referenceName" : "template3",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "6737125114",
+      "localizations" : [
+        {
+          "description" : "Template",
+          "displayName" : "Compact and Efficient",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "template4",
+      "referenceName" : "template4",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6736713573",
+    "_developerTeamID" : "VNS8ZUW75C",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 750946230.86287904,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
