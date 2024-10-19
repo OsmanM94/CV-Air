@@ -6,8 +6,6 @@ struct CustomSectionsView: View {
     @State private var newSection = CustomSection(title: "", content: [])
     @State private var newContent: String = ""
     
-    @State private var showingError: Bool = false
-    @State private var errorMessage: String = ""
     @State private var showingDeleteAlert = false
     @State private var deleteIndex: Int?
     
@@ -42,18 +40,8 @@ struct CustomSectionsView: View {
         TextField("Section Title", text: $newSection.title)
             .textInputAutocapitalization(.words)
             .autocorrectionDisabled()
-            .onChange(of: newSection.title) { _, _ in
-                showingError = false
-            }
             .accessibilityLabel("New Section Title")
             .characterLimit($newSection.title, limit: characterLimits["title"] ?? 50, isTextAssistEnabled: isTextAssistEnabled)
-        
-        if showingError {
-            Text(errorMessage)
-                .foregroundStyle(.red)
-                .font(.caption)
-                .accessibilityLabel("Error: \(errorMessage)")
-        }
         
         VStack(alignment: .leading, spacing: 25) {
             ForEach(newSection.content.indices, id: \.self) { index in
@@ -97,7 +85,6 @@ struct CustomSectionsView: View {
         Button("Add Section") {
             sections.append(newSection)
             newSection = CustomSection(title: "", content: [])
-            showingError = false
         }
         .buttonStyle(.bordered)
         .controlSize(.regular)

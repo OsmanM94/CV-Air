@@ -113,20 +113,15 @@ struct CustomCVCreationView: View {
     )
     
     var body: some View {
-        CustomCVFormView(customCV: customCV, onSave: saveCustomCV, isNewCV: true)
-            .disabled(storeViewModel.unlockedFeatures["customCV"] != true)
-            .overlay {
-                if storeViewModel.unlockedFeatures["customCV"] != true {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 80))
-                        .foregroundStyle(.orange)
-                        .padding()
-                        .background(Color(.black).opacity(0.5))
-                        .clipShape(Circle())
-                }
+        ZStack {
+            if storeViewModel.unlockedFeatures["customCV"] != true {
+                CustomCVPromo()
+            } else {
+                CustomCVFormView(customCV: customCV, onSave: saveCustomCV, isNewCV: true)
             }
+        }
     }
-    
+
     private func saveCustomCV() async {
         modelContext.insert(customCV)
         

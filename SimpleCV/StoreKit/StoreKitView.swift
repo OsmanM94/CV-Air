@@ -54,7 +54,9 @@ struct StoreKitView: View {
             }
         }
         .task {
-            await viewModel.loadProducts()
+            if viewModel.products.isEmpty {
+                await viewModel.loadProducts()
+            }
         }
     }
     
@@ -190,7 +192,10 @@ fileprivate struct ProductDetailView: View {
                 .font(.title2)
                 .fontWeight(.bold)
             
-            Button(action: { dismiss() }) {
+            Button(action: {
+                dismiss()
+                viewModel.purchaseViewState = .ready
+            }) {
                 Text("Done")
                     .font(.headline)
                     .frame(maxWidth: .infinity)

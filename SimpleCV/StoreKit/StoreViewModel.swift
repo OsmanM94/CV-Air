@@ -153,7 +153,7 @@ final class StoreKitViewModel {
             purchaseViewState = .ready
             
         @unknown default:
-            purchaseViewState = .failed("DEBUG: What the heck just happened...?")
+            purchaseViewState = .failed("DEBUG: Unknown error occured")
         }
     }
     
