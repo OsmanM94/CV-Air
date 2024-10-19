@@ -46,6 +46,10 @@ func generatePDF(for cv: CV, using templateType: CVTemplateType, fontSize: CVFon
     }
 }
 
+func generateCustomPDF(for cv: CustomCV, fontSize: CVFontSize, spacing: CVSpacing) async -> Data {
+    return await CustomSectionsTemplate.generatePDF(for: cv, fontSize: fontSize, spacing: spacing)
+}
+
 struct OriginalTemplate: CVTemplate {
     static func generatePDF(for cv: CV, fontSize: CVFontSize, spacing: CVSpacing) async -> Data {
             await withCheckedContinuation { continuation in

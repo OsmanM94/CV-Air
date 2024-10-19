@@ -5,8 +5,6 @@ struct HistoryView: View {
     @Binding var history: [HistoryEntry]
     @State private var newEntry = HistoryEntry(title: "", subtitle: "", startYear: Calendar.current.component(.year, from: Date()), endYear: nil, details: [])
     
-    @State private var showingError: Bool = false
-    @State private var errorMessage: String = ""
     @State private var showingDeleteAlert = false
     @State private var deleteIndex: Int?
     
@@ -17,8 +15,8 @@ struct HistoryView: View {
     
     @AppStorage("isTextAssistEnabled") private var isTextAssistEnabled: Bool = false
     let characterLimits: [String: Int] = [
-        "title": 100,
-        "subtitle": 100,
+        "title": 50,
+        "subtitle": 50,
         "detail": 100
     ]
         
@@ -49,26 +47,13 @@ struct HistoryView: View {
         TextField(titlePlaceholder, text: $newEntry.title)
             .textInputAutocapitalization(.words)
             .autocorrectionDisabled()
-            .onChange(of: newEntry.title) { _, _ in
-                showingError = false
-            }
             .accessibilityLabel(titlePlaceholder)
             .characterLimit($newEntry.title, limit: characterLimits["title"] ?? 100, isTextAssistEnabled: isTextAssistEnabled)
         
         TextField(subtitlePlaceholder, text: $newEntry.subtitle)
             .autocorrectionDisabled()
-            .onChange(of: newEntry.subtitle) { _, _ in
-                showingError = false
-            }
             .accessibilityLabel(subtitlePlaceholder)
             .characterLimit($newEntry.subtitle, limit: characterLimits["subtitle"] ?? 150, isTextAssistEnabled: isTextAssistEnabled)
-        
-        if showingError {
-            Text(errorMessage)
-                .foregroundStyle(.red)
-                .font(.caption)
-                .accessibilityLabel("Error: \(errorMessage)")
-        }
         
         HStack {
             Picker("From", selection: $newEntry.startYear) {
@@ -144,7 +129,6 @@ struct HistoryView: View {
             if validateNewEntry() {
                 history.append(newEntry)
                 newEntry = HistoryEntry(title: "", subtitle: "", startYear: Calendar.current.component(.year, from: Date()), endYear: 2024, details: [])
-                showingError = false
             }
         }
         .buttonStyle(.bordered)
@@ -374,14 +358,10 @@ struct HistoryView: View {
     
     private func validateNewEntry() -> Bool {
         if newEntry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            errorMessage = "\(titlePlaceholder) cannot be empty"
-            showingError = true
             return false
         }
         
         if newEntry.subtitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            errorMessage = "\(subtitlePlaceholder) cannot be empty"
-            showingError = true
             return false
         }
         

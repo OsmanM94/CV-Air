@@ -30,6 +30,21 @@
       "type" : "Consumable"
     },
     {
+      "displayPrice" : "5.99",
+      "familyShareable" : false,
+      "internalID" : "6737147721",
+      "localizations" : [
+        {
+          "description" : "Template",
+          "displayName" : "Custom",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "customCV",
+      "referenceName" : "customCV",
+      "type" : "Consumable"
+    },
+    {
       "displayPrice" : "1.99",
       "familyShareable" : false,
       "internalID" : "6737124941",
@@ -79,7 +94,7 @@
     "_applicationInternalID" : "6736713573",
     "_developerTeamID" : "VNS8ZUW75C",
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 750946230.86287904,
+    "_lastSynchronizedDate" : 751030244.09653497,
     "_locale" : "en_US",
     "_storefront" : "USA",
     "_storeKitErrors" : [

@@ -24,6 +24,6 @@ struct SimpleCVApp: App {
                 }
                 .environment(storeKitViewModel)
         }
-        .modelContainer(for: CV.self)
+        .modelContainer(for: [CV.self, CustomCV.self])
     }
 }

@@ -14,10 +14,10 @@ struct PersonalInfoView: View {
     
     let characterLimits: [Field: Int] = [
         .name: 50,
-        .address: 100,
+        .address: 50,
         .phoneNumber: 20,
         .email: 50,
-        .website: 100
+        .website: 50
     ]
     
     var body: some View {

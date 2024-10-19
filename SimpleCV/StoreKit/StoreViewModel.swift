@@ -46,7 +46,7 @@ enum StoreError: Error {
 final class StoreKitViewModel {
     var products: [Product] = []
     var selectedProduct: Product?
-    let productNames = ["adjustments", "template2", "template3", "template4"]
+    let productNames = ["adjustments", "template2", "template3", "template4", "customCV"]
     
     var purchaseViewState: PurchaseViewState = .ready
     var productViewState: LoadingProductsViewState = .loading
@@ -55,7 +55,8 @@ final class StoreKitViewModel {
         "adjustments": false,
         "template2": false,
         "template3": false,
-        "template4": false
+        "template4": false,
+        "customCV": false
     ] {
         didSet {
             saveUnlockedFeatures()
@@ -108,6 +109,7 @@ final class StoreKitViewModel {
            case "template2": return "template2"
            case "template3": return "template3"
            case "template4": return "template4"
+           case "customCV": return "customCV"
            default: return "default_product_image"
        }
    }
@@ -202,7 +204,8 @@ final class StoreKitViewModel {
         case "template2": return 1
         case "template3": return 2
         case "template4": return 3
-        default: return 4
+        case "customCV": return 4
+        default: return 5
         }
     }
 }

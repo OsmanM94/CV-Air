@@ -1,14 +1,9 @@
-//
-//  SavedCVsView.swift
-//  SimpleCV
-//
-//  Created by asia on 08.10.2024.
-//
+
 
 import SwiftUI
 import SwiftData
 
-struct SavedCVsView: View {
+struct SavedStandardCVsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var savedCVs: [CV]
     
@@ -22,7 +17,6 @@ struct SavedCVsView: View {
                 }
                 .onDelete(perform: deleteCVs)
             }
-            .navigationTitle("Saved CVs")
             .overlay {
                 if savedCVs.isEmpty {
                     ContentUnavailableView("Empty", systemImage: "tray.fill")
@@ -63,5 +57,5 @@ struct CVDetailView: View {
 }
 
 #Preview {
-    SavedCVsView()
+    SavedStandardCVsView()
 }

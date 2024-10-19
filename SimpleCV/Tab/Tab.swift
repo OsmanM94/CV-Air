@@ -18,7 +18,7 @@ struct Tab: View {
                 }
                 .tag(0)
             
-            SavedCVsView()
+            CombinedSavedCVsView()
                 .tabItem {
                     Label("Saved", systemImage: "folder.fill")
                 }
