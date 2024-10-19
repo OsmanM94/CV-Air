@@ -48,6 +48,11 @@ final class StoreKitViewModel {
     var selectedProduct: Product?
     let productNames = ["adjustments", "template2", "template3", "template4", "customCV"]
     
+    /// Restore purchases
+    var showingRestoreAlert: Bool = false
+    var restoreMessage: String = ""
+    var isRestoring: Bool = false
+    
     var purchaseViewState: PurchaseViewState = .ready
     var productViewState: LoadingProductsViewState = .loading
     
@@ -167,9 +172,10 @@ final class StoreKitViewModel {
         guard let productID = productID else { return }
         unlockedFeatures[productID] = true
     }
-    
+        
     @MainActor
-    private func checkForExistingPurchases() async {
+    func checkForExistingPurchases() async -> [String] {
+        var restoredPurchases: [String] = []
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result else {
                 continue
@@ -177,8 +183,10 @@ final class StoreKitViewModel {
             
             if transaction.revocationDate == nil {
                 await updatePurchaseState(for: transaction.productID)
+                restoredPurchases.append(transaction.productID)
             }
         }
+        return restoredPurchases
     }
     
     private func saveUnlockedFeatures() {
@@ -207,5 +215,24 @@ final class StoreKitViewModel {
         case "customCV": return 4
         default: return 5
         }
+    }
+    
+    @MainActor
+    func restorePurchases() async {
+        isRestoring = true
+        defer { isRestoring = false }
+        
+        do {
+            try await AppStore.sync()
+            let restoredPurchases = await checkForExistingPurchases()
+            if restoredPurchases.isEmpty {
+                self.restoreMessage = "No purchases to restore."
+            } else {
+                self.restoreMessage = "Successfully restored \(restoredPurchases.count) purchase(s)."
+            }
+        } catch {
+            self.restoreMessage = "Failed to restore purchases: \(error.localizedDescription)"
+        }
+        showingRestoreAlert = true
     }
 }

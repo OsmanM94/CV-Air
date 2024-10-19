@@ -18,18 +18,6 @@ struct SupportView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 20) {
-                    Link(destination: URL(string: "tel:\(phoneNumber)")!) {
-                        Text("Call developer")
-                            .font(.title)
-                            .bold()
-                            .fontDesign(.rounded)
-                            .foregroundStyle(.blue)
-                    }
-                    .accessibilityLabel("Tap to call developer")
-                    
-                    Text("Or")
-                        .font(.title3)
-                    
                     Text("osmanmunur@yahoo.com")
                         .accessibilityLabel("Tap to email developer")
                     

@@ -24,10 +24,33 @@ struct StoreKitView: View {
             }
             .animation(.easeInOut(duration: 0.3), value: viewModel.productViewState)
             .navigationTitle("Shop")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Task {
+                            await viewModel.restorePurchases()
+                        }
+                    } label: {
+                        if viewModel.isRestoring {
+                            ProgressView()
+                        } else {
+                            Text("Restore")
+                        }
+                    }
+
+                }
+            }
             .sheet(item: Bindable(viewModel).selectedProduct) { product in
                 ProductDetailView(product: product)
                     .interactiveDismissDisabled(viewModel.purchaseViewState == .purchasing)
                     .presentationDragIndicator(.visible)
+            }
+            .alert("Restore Purchases", isPresented: Bindable(viewModel).showingRestoreAlert) {
+                Button("OK") {
+                    viewModel.showingRestoreAlert = false
+                }
+            } message: {
+                Text(viewModel.restoreMessage)
             }
         }
         .task {
