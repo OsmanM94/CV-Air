@@ -13,11 +13,17 @@ struct CustomCVPromo: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .padding(.horizontal)
                     .shadow(color: .gray, radius: 1)
-                
+            }
+            .containerRelativeFrame(.horizontal)
+            .padding(.top)
+            .overlay(alignment: .bottom) {
                 lockedOverlay
             }
-            .padding()
-            .containerRelativeFrame(.horizontal)
+            .overlay(alignment: .topTrailing) {
+                Image(systemName: "lock.fill")
+                    .foregroundStyle(.orange)
+                    .padding(30)
+            }
             .task {
                 if storeViewModel.products.isEmpty {
                     Task {
@@ -29,20 +35,12 @@ struct CustomCVPromo: View {
     }
     
     private var lockedOverlay: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "lock.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(.secondary)
-            
-            Text("Unlock the ability to create custom sections for your CV!")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-            
+        VStack {
             if let customCVProduct = storeViewModel.products.first(where: { $0.id == "customCV" }) {
                 Button(action: {
                     Task {
                         await storeViewModel.purchase(product: customCVProduct)
+                        storeViewModel.purchaseViewState = .ready
                     }
                 }) {
                     Text("Unlock for \(customCVProduct.displayPrice)")
@@ -51,12 +49,13 @@ struct CustomCVPromo: View {
                 }
                 .disabled(storeViewModel.purchaseViewState == .purchasing)
                 .buttonStyle(.borderedProminent)
-                .controlSize(.regular)
+                .controlSize(.small)
             } else {
                 ProgressView()
             }
         }
         .padding([.top, .bottom])
+        .padding(.bottom, 30)
     }
 }
 

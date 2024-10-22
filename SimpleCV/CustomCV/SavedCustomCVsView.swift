@@ -44,7 +44,7 @@ struct CustomCVDetailView: View {
     
     var body: some View {
         CustomCVFormView(customCV: customCV, onSave: updateCustomCV, isNewCV: false)
-            .navigationTitle("Edit Custom CV")
+            .navigationTitle("Edit")
     }
     
     private func updateCustomCV() {

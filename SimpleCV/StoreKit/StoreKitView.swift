@@ -176,7 +176,7 @@ fileprivate struct ProductDetailView: View {
             }) {
                 Text("Purchase")
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.borderedProminent)
             .controlSize(.extraLarge)
             .disabled(viewModel.purchaseViewState == .purchasing)
         }

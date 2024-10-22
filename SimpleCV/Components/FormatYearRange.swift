@@ -1,9 +1,4 @@
-//
-//  FormatYearRange.swift
-//  SimpleCV
-//
-//  Created by asia on 10.10.2024.
-//
+
 
 import Foundation
 

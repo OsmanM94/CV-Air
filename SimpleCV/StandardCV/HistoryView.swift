@@ -70,11 +70,17 @@ struct HistoryView: View {
             .accessibilityLabel("Start Year")
             
             Picker("To", selection: Binding(
-                get: { newEntry.endYear ?? Calendar.current.component(.year, from: Date()) },
-                set: { newEntry.endYear = $0 }
+                get: {
+                    newEntry.endYear ?? Calendar.current.component(.year, from: Date())
+                },
+                set: { selectedYear in
+                    let currentYear = Calendar.current.component(.year, from: Date())
+                    newEntry.endYear = selectedYear == currentYear ? nil : selectedYear
+                }
             )) {
                 ForEach(1950...Calendar.current.component(.year, from: Date()), id: \.self) { year in
-                    Text(String(year)).tag(year)
+                    Text(year == Calendar.current.component(.year, from: Date()) ? "Present" : String(year))
+                        .tag(year)
                 }
             }
             .pickerStyle(.menu)

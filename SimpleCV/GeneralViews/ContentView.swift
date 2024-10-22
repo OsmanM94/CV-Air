@@ -3,6 +3,7 @@ import SwiftData
 
 struct ContentView: View {    
     @State private var cvType: CVType = .standard
+    @Environment(\.colorScheme) private var colorScheme
     
     enum CVType {
         case standard, custom
@@ -17,10 +18,13 @@ struct ContentView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding()
-                
+              
                 creationView
             }
-            .navigationTitle("Create CV")
+            .background(backgroundStyle)
+            .navigationTitle("Create")
+            .toolbarBackground(backgroundStyle, for: .navigationBar)
+           
         }
     }
     
@@ -31,8 +35,11 @@ struct ContentView: View {
             StandardCVCreationView()
         case .custom:
             CustomCVCreationView()
-               
         }
+    }
+    
+    private var backgroundStyle: Color {
+        colorScheme == .light ? Color(.systemGray6) : Color.clear
     }
 }
 

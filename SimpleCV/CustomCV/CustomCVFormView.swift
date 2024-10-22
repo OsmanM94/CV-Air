@@ -1,8 +1,9 @@
 
+
 import SwiftUI
 
-struct CVFormView: View {
-    @Bindable var cv: CV
+struct CustomCVFormView: View {
+    @Bindable var customCV: CustomCV
     var onSave: (() async throws -> Void)?
     var isNewCV: Bool
     
@@ -14,7 +15,6 @@ struct CVFormView: View {
     @State private var showingShareSheet: Bool = false
     
     @AppStorage("isTextAssistEnabled") private var isTextAssistEnabled: Bool = false
-    @State private var selectedTemplate: CVTemplateType = .original
     @State private var selectedFontSize: CVFontSize = .medium
     @State private var selectedSpacing: CVSpacing = .normal
     
@@ -24,30 +24,6 @@ struct CVFormView: View {
     
     var body: some View {
         Form {
-            Section(header: Text("Template")) {
-                Picker("Select Template", selection: $selectedTemplate) {
-                    ForEach(CVTemplateType.allCases, id: \.id) { template in
-                        if template == .original || storeViewModel.unlockedFeatures[template.productId] == true {
-                            Text(template.rawValue).tag(template)
-                        } else {
-                            Label {
-                                Text(template.rawValue)
-                            } icon: {
-                                Image(systemName: "lock.fill")
-                            }
-                            .tag(template)
-                        }
-                    }
-                }
-                .pickerStyle(.menu)
-                .onChange(of: selectedTemplate) { _, newValue in
-                    if newValue != .original && storeViewModel.unlockedFeatures[newValue.productId] != true {
-                        selectedTemplate = .original
-                    }
-                }
-            }
-            .accessibilityLabel("Select templates")
-            
             DisclosureGroup {
                 Section(header: Text("Font Size")) {
                     Picker("Select Font Size", selection: $selectedFontSize) {
@@ -83,67 +59,24 @@ struct CVFormView: View {
             .disabled(storeViewModel.unlockedFeatures["adjustments"] != true)
 
             Section(header: Text("Personal Information")) {
-                PersonalInfoView(personalInfo: $cv.personalInfo)
+                PersonalInfoView(personalInfo: $customCV.personalInfo)
             }
             
             Section(header: Text("Summary")) {
-                TextField("A short summary of yourself", text: $cv.summary, axis: .vertical)
+                TextField("A short summary of yourself", text: $customCV.summary, axis: .vertical)
                     .accessibilityLabel("Add a short summary about yourself. Keep it simple and to the point.")
-                    .characterLimit($cv.summary, limit: summaryCharacterLimit, isTextAssistEnabled: isTextAssistEnabled)
+                    .characterLimit($customCV.summary, limit: summaryCharacterLimit, isTextAssistEnabled: isTextAssistEnabled)
+            }
+            
+            Section(header: Text("Custom Sections")) {
+                CustomSectionsView(sections: $customCV.customSections)
             }
             
             Section {
-                DisclosureGroup {
-                    HistoryView(
-                        history: $cv.professionalHistory,
-                        titlePlaceholder: "Company",
-                        subtitlePlaceholder: "Position",
-                        detailsTitle: "Responsibilities",
-                        addButtonTitle: "Add Experience"
-                    )
-                } label: {
-                    Text("Professional History")
-                        .foregroundStyle(.blue)
-                }
-            }
-
-            Section {
-                DisclosureGroup {
-                    HistoryView(
-                        history: $cv.educationalHistory,
-                        titlePlaceholder: "Institution",
-                        subtitlePlaceholder: "Degree",
-                        detailsTitle: "Details",
-                        addButtonTitle: "Add Education"
-                    )
-                } label: {
-                    Text("Educational History")
-                        .foregroundStyle(.blue)
-                }
-            }
-            
-            Section {
-                DisclosureGroup {
-                    ProjectView(projects: $cv.projects)
-                } label: {
-                    Label("Projects", systemImage: "folder.fill")
-                        .foregroundStyle(.blue)
-                }
-            }
-
-            Section(header: Text("Skills")) {
-                SkillsView(skills: $cv.skills)
-            }
-            
-            Section {
-                NavigationLink("Preview") {
-                    CVPreview(cv: cv, templateType: selectedTemplate, fontSize: selectedFontSize, spacing: selectedSpacing)
-                }
-                
                 if let onSave = onSave {
                     Button(action: {
                         Task {
-                            await saveCV(onSave: onSave)
+                            await saveCustomCV(onSave: onSave)
                         }
                     }) {
                         if isSaving {
@@ -190,7 +123,7 @@ struct CVFormView: View {
             Alert(title: Text("Status"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
         }
         .sheet(isPresented: $showingShareSheet) {
-            if let data = cv.pdfData {
+            if let data = customCV.pdfData {
                 ShareSheet(activityItems: [data])
             }
         }
@@ -198,22 +131,22 @@ struct CVFormView: View {
     
     private func generateAndExportPDF() {
         Task {
-            let pdfData = await generatePDF(for: cv, using: selectedTemplate, fontSize: selectedFontSize, spacing: selectedSpacing)
+            let pdfData = await generateCustomPDF(for: customCV, fontSize: selectedFontSize, spacing: selectedSpacing)
             await MainActor.run {
-                cv.pdfData = pdfData
+                customCV.pdfData = pdfData
                 showingShareSheet = true
             }
         }
     }
     
-    private func saveCV(onSave: @escaping () async throws -> Void) async {
+    private func saveCustomCV(onSave: @escaping () async throws -> Void) async {
         guard !isSaving else { return }
         isSaving = true
         saveSuccess = false
         
         do {
             try await onSave()
-            alertMessage = "CV saved successfully!"
+            alertMessage = "Saved."
             saveSuccess = true
         } catch {
             alertMessage = "Oops... Something went wrong: \(error.localizedDescription)"
@@ -224,9 +157,17 @@ struct CVFormView: View {
     }
     
     private func isFormValid() -> Bool {
-        !cv.personalInfo.name.isEmpty &&
-        !cv.personalInfo.email.isEmpty &&
-        !cv.personalInfo.phoneNumber.isEmpty &&
-        !cv.personalInfo.address.isEmpty
+        !customCV.personalInfo.name.isEmpty &&
+        !customCV.personalInfo.email.isEmpty &&
+        !customCV.personalInfo.phoneNumber.isEmpty &&
+        !customCV.personalInfo.address.isEmpty &&
+        !customCV.customSections.isEmpty
+    }
+}
+
+#Preview {
+    NavigationStack {
+        CustomCVFormView(customCV: CustomCV(personalInfo: PersonalInfo(name: "Munir", address: "54 Salter Street", phoneNumber: "07466861603", email: "osmanmunur@yahoo.com"), summary: "Hard working individual", customSections: [CustomSection(title: "Project", content: ["Hello electric is a car marketplace", "It is a web application that allows users to search for and buy electric vehicles"])]), isNewCV: true)
+            .environment(StoreKitViewModel())
     }
 }
