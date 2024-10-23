@@ -1,5 +1,5 @@
 CV Air
-Curriculum Vitae app built with SwiftUI
+Curriculum Vitae app built with SwiftUI.
 • Designed to be ATS (Automatic Tracking System) compliant
 • Live on the App Store
 • Follows MV architecture
